@@ -6,7 +6,6 @@ namespace TizTaboo
     {
         None,
         WebLink,
-        Note,
         WinLink,
         Batch
     }
