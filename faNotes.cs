@@ -1,74 +1,130 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace TizTaboo
 {
     enum faType
     {
         None,
-        WebLink,
-        WinLink,
+        URL,
+        FileName,
+        MultiAlias,
         Batch
     }
-    class faAlias
-    {
-        byte Count { get; set; }
-        string[] Name { get; set; }
-        public faAlias()
-        {
-            Count = 0;
-        }
-        public void Add(string _n)
-        {
-            Count++;
-            Name[Count - 1] = _n;
-        }
 
-    }
-    class faLink
-    {
-        byte Count { get; set; }
-        string[] Link { get; set; }
-        public faLink()
-        {
-            Count = 0;
-        }
-        public void Add(string _n)
-        {
-            Count++;
-            Link[Count - 1] = _n;
-        }
-
-    }
+    [Serializable]
     class faNote
     {
-        public faAlias Alias { get; set; }
-        public faLink Link { get; set; }
+        public string Name;
+        public string Alias;
+        public string Command;
+        public faType Type;
+        public DateTime LastExec;
 
-        public faType Type { get; set; }
-        
-        public faNote()
+        public faNote(string Name, string Alias, string Command, faType Type)
         {
-            Type = faType.None;        
+            this.Name = Name;
+            this.Alias = Alias;
+            this.Command = Command;
+            this.Type = Type;
+            this.LastExec = DateTime.Now;
         }
     }
-
-
 
     class faNotes
     {
-        public int Count { get; set; }
-        private faNote[] _notes;
-        public faNotes()
+        const string English = "qwertyuiop[]asdfghjkl;'zxcvbnm,.";
+        public string Russian = "йцукенгшщзхъфывапролджэячсмитьбю";
+        public int Count
         {
-            Count = 0;
+            get { return this._notes.Count; }
+        }
+        private List<faNote> _notes;
+        private string _filepath;
+
+        public faNotes(string FilePath)
+        {
+            _notes = new List<faNote>();
+            _filepath = FilePath;
+        }
+
+        public bool Load()
+        {
+            try
+            {
+                using (Stream stream = File.Open(_filepath, FileMode.Open))
+                {
+                    var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                    _notes = (List<faNote>)bformatter.Deserialize(stream);
+                }
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool Save()
+        {
+            try
+            {
+                using (Stream stream = File.Open(_filepath, FileMode.Create))
+                {
+                    var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                    bformatter.Serialize(stream, _notes);
+                }
+            }
+            catch (Exception)
+            {
+                return false;                
+            }
+            return true;
         }
 
         public void Add(faNote Note)
         {
-            Count++;
-            Array.Resize(ref _notes, Count);
-            _notes[Count - 1] = new faNote();
-            _notes[Count - 1] = Note;
+            _notes.Add(Note);
         }
+
+        public faNote GetNodeByAlias(string Alias)
+        {
+            return _notes.Find(item => item.Alias == Alias);
+        }
+
+        public List<faNote> Seek(string query)
+        {
+            List<faNote> found = new List<faNote>();
+            string query_rus = ConvertEngToRus(query);
+            string query_eng = ConvertRusToEng(query);
+            found = _notes.FindAll(
+                delegate(faNote n)
+                {
+                    return n.Name.Contains(query_rus) || n.Name.Contains(query_eng) || n.Alias.Contains(query_rus) || n.Alias.Contains(query_eng);
+                });
+            return found;
+        }
+
+        private string ConvertEngToRus(string input)
+        {
+            var result = new StringBuilder(input.Length);
+            int index;
+            foreach (var symbol in input)
+                result.Append((index = English.IndexOf(symbol)) != -1 ? Russian[index] : symbol);
+            return result.ToString();
+        }
+
+        private string ConvertRusToEng(string input)
+        {
+            var result = new StringBuilder(input.Length);
+            int index;
+            foreach (var symbol in input)
+                result.Append((index = Russian.IndexOf(symbol)) != -1 ? English[index] : symbol);
+            return result.ToString();
+        }
+
     }
 }

@@ -8,18 +8,51 @@ using System.Windows.Input;
 using GlobalHotKey;
 using System.Diagnostics;
 using System.Net;
+using System.Threading;
+using System.Collections.Generic;
 
 namespace TizTaboo
 {
 
     public partial class MainForm : Form
     {
-
-        const string English = "qwertyuiop[]asdfghjkl;'zxcvbnm,.";
-        public string Russian = "йцукенгшщзхъфывапролджэячсмитьбю";
         private readonly HotKeyManager _hotKeyManager;
+        faNotes NoteList;
+
         int i = 0;
         int si = 0;
+
+        public int _height;
+        public int _width;
+
+        private void ShowForm()
+        {
+            this.Show();
+            for (int y = 0; y < 100; y++)
+            {
+                if (this.Location.Y + y > 0)
+                {
+                    this.Location = new Point(0, 0);
+                    break;
+                }
+                this.Location = new Point(0, this.Location.Y + y);
+                Thread.Sleep(7);
+            }
+        }
+        private void HideForm()
+        {
+            for (int y = 0; y < 100; y++)
+            {
+                if (this.Location.Y - y < -_height)
+                {
+                    this.Location = new Point(0, -_height);
+                    break;
+                }
+                this.Location = new Point(0, this.Location.Y - y);
+                Thread.Sleep(7);
+            }
+        }
+
         public MainForm()
         {
             InitializeComponent();
@@ -27,19 +60,69 @@ namespace TizTaboo
             {
                 _hotKeyManager = new HotKeyManager();
                 _hotKeyManager.KeyPressed += HotKeyManagerPressed;
+                _hotKeyManager.Register(System.Windows.Input.Key.X, System.Windows.Input.ModifierKeys.Alt);
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+
+            bool badfile = false;
+
+            if (File.Exists(Properties.Settings.Default.basepath))
+            {
+                int _n = int.Parse((Properties.Settings.Default.lastbackup ?? "0").ToString());
+                _n = _n < 10 ? _n + 1 : 1;
+                File.Copy(Properties.Settings.Default.basepath, Properties.Settings.Default.basepath + "_" + _n.ToString(), true);
+                Properties.Settings.Default.lastbackup = _n.ToString();
+                NoteList = new faNotes(Properties.Settings.Default.basepath);
+                badfile = !NoteList.Load();
+            }
+            else badfile = true;
+
+            while (badfile)
+            {
+                var result = MessageBox.Show("База данных не найдена или имеет неправильный формат, создать новую? Нет - выбрать другой файл", "TizTaboo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.No)
+                {
+                    OpenFileDialog ofd = new OpenFileDialog();
+                    ofd.InitialDirectory = Application.StartupPath;
+                    ofd.Filter = "bin files|*.bin|all files|*.*";
+                    if (ofd.ShowDialog() == DialogResult.OK)
+                    {
+                        Properties.Settings.Default.basepath = ofd.FileName;
+                        NoteList = new faNotes(ofd.FileName);
+                        badfile = !NoteList.Load();
+                    }
+                }
+                else if (result == DialogResult.Yes)
+                {
+                    Properties.Settings.Default.basepath = Application.StartupPath + "\\data.bin";
+                    NoteList = new faNotes(Properties.Settings.Default.basepath);
+                    NoteList.Add(new faNote("Тест", "test", "https://vk.com", faType.URL));
+                    if (!NoteList.Save())
+                    {
+                        MessageBox.Show("Ошибка создания базы!");
+                        return;
+                    }
+                    else badfile = false;
+
+                }
+            }
+
+
+            Properties.Settings.Default.Save();
+
+            _height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 2;
+            _width = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
+            this.Size = new Size(_width, _height);
+            this.Location = new Point(0, -_height);
         }
 
         void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
         {
-            this.Show();
-            //InputLanguage.CurrentInputLanguage = InputLanguage.FromCulture(new System.Globalization.CultureInfo("en-US"));
             tbAlias.Clear();
-            //RefreshData("");
+            this.ShowForm();
             this.Activate();
             this.Focus();
             tbAlias.Focus();
@@ -47,111 +130,52 @@ namespace TizTaboo
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            if (File.Exists(Properties.Settings.Default.basepath))
-            {
-                Properties.Settings.Default.constr = String.Format("Data Source={0}", Properties.Settings.Default.basepath);
-                _hotKeyManager.Register(System.Windows.Input.Key.X, System.Windows.Input.ModifierKeys.Alt);
-                int _n = int.Parse((Properties.Settings.Default.lastbackup ?? "0").ToString());
-                _n = _n < 10 ? _n + 1 : 1;
 
-                File.Copy(Properties.Settings.Default.basepath, Properties.Settings.Default.basepath + "_" + _n.ToString(), true);
-                Properties.Settings.Default.lastbackup = _n.ToString();
-            }
-            else
-            {
-                MessageBox.Show("База данных не найдена!");
-                OpenFileDialog ofd = new OpenFileDialog();
-                ofd.InitialDirectory = Application.StartupPath;
-                ofd.Filter = "sdf files|*.sdf|all files|*.*";
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    Properties.Settings.Default.basepath = ofd.FileName;
-                    Properties.Settings.Default.constr = String.Format("Data Source={0}", Properties.Settings.Default.basepath);
-
-                }
-            }
-            Properties.Settings.Default.Save();
         }
 
-        private string ConvertEngToRus(string input)
-        {
-            var result = new StringBuilder(input.Length);
-            int index;
-            foreach (var symbol in input)
-                result.Append((index = English.IndexOf(symbol)) != -1 ? Russian[index] : symbol);
-            return result.ToString();
-        }
-        private string ConvertRusToEng(string input)
-        {
-            var result = new StringBuilder(input.Length);
-            int index;
-            foreach (var symbol in input)
-                result.Append((index = Russian.IndexOf(symbol)) != -1 ? English[index] : symbol);
-            return result.ToString();
-        }
+
 
         private void Seek(string q)
         {
-            SqlCeConnection conn = new SqlCeConnection(Properties.Settings.Default.constr);
             try
             {
                 q = q.Trim();
                 pnl.Controls.Clear();
                 if (q.Length > 0)
                 {
-                    string qr = ConvertEngToRus(q).Replace("'", "''");
-                    string qe = ConvertRusToEng(q).Replace("'", "''");
-
-                    SqlCeCommand cmd = new SqlCeCommand("", conn);
-                    conn.Open();
-
-                    cmd.CommandText =
-                    "SELECT a.id, a.type, a.text, a.link, a.alias " +
-                    "FROM Notes AS a " +
-                    "WHERE (a.alias LIKE '%" + qr + "%') OR (a.alias LIKE '%" + qe + "%') " +
-                    "OR (a.text LIKE '%" + qr + "%') OR (a.text LIKE '%" + qe + "%') " +
-                    "ORDER BY a.[when] DESC, a.count DESC ";
-
-                    SqlCeDataReader rdr = cmd.ExecuteReader();
-
+                    List<faNote> result = NoteList.Seek(q);
                     i = 0;
                     si = 0;
-                    while (rdr.Read())
+                    if (result.Count > 0)
                     {
-                        Panel panel = new Panel();
-                        panel.Name = "subpanel_" + i;
-                        panel.Location = new Point(0, (i * 24) + 4);
-                        panel.Size = new Size(750, 20);
-                        panel.BorderStyle = BorderStyle.None;
-                        panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
-                        panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
-                        panel.Parent = pnl;
-                        panel.Tag = rdr["id"].ToString();
+                        foreach (faNote note in result)
+                        {
+                            Panel panel = new Panel();
+                            panel.Name = "subpanel_" + i;
+                            panel.Location = new Point(0, (i * 24) + 4);
+                            panel.Size = new Size(750, 20);
+                            panel.BorderStyle = BorderStyle.None;
+                            panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
+                            panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
+                            panel.Parent = pnl;
+                            panel.Tag = note.Alias;
 
-                        Label lbl = new Label();
-                        lbl.Parent = panel;
-                        lbl.Name = "label_" + i;
-                        lbl.AutoSize = true;
-                        lbl.Location = new Point(8, 2);
-                        string[] aliases = rdr["alias"].ToString().Split(';');
-                        lbl.Text = aliases[0];
+                            Label lbl = new Label();
+                            lbl.Parent = panel;
+                            lbl.Name = "label_" + i;
+                            lbl.AutoSize = true;
+                            lbl.Location = new Point(8, 2);
+                            lbl.Text = note.Name;
+                            lbl.Visible = true;
 
-                        string _buf = "";
-                        if (rdr["text"].ToString().Length > 0)
-                            _buf = "  (" + rdr["text"].ToString() + ")";
-                        else
-                            _buf = "  (" + rdr["link"].ToString() + ")";
-                        //
-                        if (_buf.Length > 85) _buf = _buf.Remove(84) + "..)";
-                        lbl.Text += _buf;
-                        lbl.Visible = true;
-                        panel.Controls.Add(lbl);
-
-                        pnl.Controls.Add(panel);
-                        i++;
-                        if (i == 13)
-                            break;
+                            panel.Controls.Add(lbl);
+                            pnl.Controls.Add(panel);
+                            i++;
+                            if (i == 13)
+                                break;
+                        }
                     }
+
                     if (i < 13)
                     {
                         Panel panel = new Panel();
@@ -248,12 +272,10 @@ namespace TizTaboo
                         pnl.Controls.Add(panel);
                         i++;
                     }
-                    conn.Close();
                 }
             }
             catch (Exception ex)
             {
-                conn.Close();
                 MessageBox.Show(ex.Message);
             }
         }
@@ -262,82 +284,68 @@ namespace TizTaboo
         {
             if (tbAlias.Text.Trim().Contains("`") || tbAlias.Text.Trim().Contains("ё"))
             {
+                HideForm();
                 SettForm newForm = new SettForm();
                 tbAlias.Clear();
-                this.Hide();
                 newForm.ShowDialog();
-                this.Show();
+                this.ShowForm();
             }
             else
                 Seek(tbAlias.Text);
         }
 
-
-        private bool Run(string id, string alias)
+        private bool Run(string alias, string query)
         {
             bool ret = true;
-
-            SqlCeConnection conn = new SqlCeConnection(Properties.Settings.Default.constr);
             try
             {
-                switch (id)
+                switch (alias)
                 {
                     case "-1":
-                        Process.Start("https://www.google.ru/search?q=" + Uri.EscapeDataString(alias));
+                        Process.Start("https://www.google.ru/search?q=" + Uri.EscapeDataString(query));
                         break;
                     case "-2":
-                        Process.Start("https://translate.google.ru/#ru/en/" + Uri.EscapeDataString(alias));
+                        Process.Start("https://translate.google.ru/#ru/en/" + Uri.EscapeDataString(query));
                         break;
                     case "-3":
-                        Process.Start("https://translate.google.ru/#en/ru/" + Uri.EscapeDataString(alias));
+                        Process.Start("https://translate.google.ru/#en/ru/" + Uri.EscapeDataString(query));
                         break;
                     case "-4":
-                        System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", alias+"\n@pause");
+                        System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", query + "\n@pause");
                         Process.Start(Application.StartupPath + "\\run.bat");
                         break;
                     default:
                         {
-                            SqlCeCommand cmd = new SqlCeCommand("", conn);
-                            conn.Open();
-
-                            cmd.CommandText =
-                                   "SELECT a.id, a.type, a.text, a.link, a.param, a.count " +
-                                   "FROM Notes AS a " +
-                                   "WHERE a.id = " + id;
-
-                            SqlCeDataReader rdr = cmd.ExecuteReader();
-
-                            rdr.Read();
-                            switch (rdr["type"].ToString())
+                            faNote note = NoteList.GetNodeByAlias(alias);
+                            switch (note.Type)
                             {
-                                case "WebLink":
-                                case "WinLink":
-                                    Process.Start(rdr["link"].ToString(), rdr["param"].ToString());
+                                case faType.None:
                                     break;
-                                case "cmd":
-                                    System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", rdr["link"].ToString());
+                                case faType.URL:
+                                case faType.FileName:
+                                    Process.Start(note.Command);
+                                    break;
+                                case faType.Batch:
+                                    System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", note.Command);
                                     Process.Start(Application.StartupPath + "\\run.bat");
+                                    break;
+                                case faType.MultiAlias:
                                     break;
                                 default:
                                     break;
                             }
-                            cmd.CommandText =
-                                   "UPDATE Notes SET count = count + 1, [when] = GETDATE() WHERE id = " + id;
-                            cmd.ExecuteNonQuery();
-                            conn.Close();
+                            note.LastExec = DateTime.Now;
                         }
                         break;
                 }
             }
             catch (Exception ex)
             {
-                conn.Close();
                 ret = false;
                 MessageBox.Show(ex.Message);
             }
             return ret;
         }
-
 
         private void tbAlias_KeyDown(object sender, KeyEventArgs e)
         {
@@ -362,10 +370,21 @@ namespace TizTaboo
             else if (e.KeyCode == Keys.Enter && i > 0)
             {
                 if (Run(pnl.Controls["subpanel_" + si].Tag.ToString(), tbAlias.Text.Trim()))
-                    this.Hide();
+                    this.HideForm();
             }
             else if (e.KeyCode == Keys.Escape)
-                this.Hide();
+                this.HideForm();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.WindowsShutDown)
+                NoteList.Save();
+            else
+            {
+                HideForm();
+                e.Cancel = true;
+            }
         }
     }
 }
