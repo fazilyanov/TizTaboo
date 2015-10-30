@@ -17,7 +17,7 @@ namespace TizTaboo
     public partial class MainForm : Form
     {
         private readonly HotKeyManager _hotKeyManager;
-        faNotes NoteList;
+        
 
         int i = 0;
         int si = 0;
@@ -75,8 +75,8 @@ namespace TizTaboo
                 _n = _n < 10 ? _n + 1 : 1;
                 File.Copy(Properties.Settings.Default.basepath, Properties.Settings.Default.basepath + "_" + _n.ToString(), true);
                 Properties.Settings.Default.lastbackup = _n.ToString();
-                NoteList = new faNotes(Properties.Settings.Default.basepath);
-                badfile = !NoteList.Load();
+                Data.NoteList = new faNotes(Properties.Settings.Default.basepath);
+                badfile = !Data.NoteList.Load();
             }
             else badfile = true;
 
@@ -91,16 +91,16 @@ namespace TizTaboo
                     if (ofd.ShowDialog() == DialogResult.OK)
                     {
                         Properties.Settings.Default.basepath = ofd.FileName;
-                        NoteList = new faNotes(ofd.FileName);
-                        badfile = !NoteList.Load();
+                        Data.NoteList = new faNotes(ofd.FileName);
+                        badfile = !Data.NoteList.Load();
                     }
                 }
                 else if (result == DialogResult.Yes)
                 {
                     Properties.Settings.Default.basepath = Application.StartupPath + "\\data.bin";
-                    NoteList = new faNotes(Properties.Settings.Default.basepath);
-                    NoteList.Add(new faNote("Тест", "test", "https://vk.com", faType.URL));
-                    if (!NoteList.Save())
+                    Data.NoteList = new faNotes(Properties.Settings.Default.basepath);
+                    Data.NoteList.Add(new faNote("Тест", "test", "https://vk.com", faType.URL));
+                    if (!Data.NoteList.Save())
                     {
                         MessageBox.Show("Ошибка создания базы!");
                         return;
@@ -112,11 +112,6 @@ namespace TizTaboo
 
 
             Properties.Settings.Default.Save();
-
-            _height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 2;
-            _width = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
-            this.Size = new Size(_width, _height);
-            this.Location = new Point(0, -_height);
         }
 
         void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
@@ -130,7 +125,10 @@ namespace TizTaboo
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-
+            _height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 2;
+            _width = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
+            this.Size = new Size(_width, _height);
+            this.Location = new Point(0, -_height);
         }
 
 
@@ -143,7 +141,7 @@ namespace TizTaboo
                 pnl.Controls.Clear();
                 if (q.Length > 0)
                 {
-                    List<faNote> result = NoteList.Seek(q);
+                    List<faNote> result = Data.NoteList.Seek(q);
                     i = 0;
                     si = 0;
                     if (result.Count > 0)
@@ -316,7 +314,7 @@ namespace TizTaboo
                         break;
                     default:
                         {
-                            faNote note = NoteList.GetNodeByAlias(alias);
+                            faNote note = Data.NoteList.GetNodeByAlias(alias);
                             switch (note.Type)
                             {
                                 case faType.None:
@@ -379,7 +377,7 @@ namespace TizTaboo
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.WindowsShutDown)
-                NoteList.Save();
+                Data.NoteList.Save();
             else
             {
                 HideForm();

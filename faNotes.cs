@@ -7,11 +7,11 @@ namespace TizTaboo
 {
     enum faType
     {
-        None,
-        URL,
-        FileName,
-        MultiAlias,
-        Batch
+        None=0,
+        URL=1,
+        FileName=2,
+        MultiAlias=3,
+        Batch=4
     }
 
     [Serializable]
@@ -39,14 +39,14 @@ namespace TizTaboo
         public string Russian = "йцукенгшщзхъфывапролджэячсмитьбю";
         public int Count
         {
-            get { return this._notes.Count; }
+            get { return this.Items.Count; }
         }
-        private List<faNote> _notes;
+        public List<faNote> Items;
         private string _filepath;
 
         public faNotes(string FilePath)
         {
-            _notes = new List<faNote>();
+            Items = new List<faNote>();
             _filepath = FilePath;
         }
 
@@ -57,7 +57,7 @@ namespace TizTaboo
                 using (Stream stream = File.Open(_filepath, FileMode.Open))
                 {
                     var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                    _notes = (List<faNote>)bformatter.Deserialize(stream);
+                    Items = (List<faNote>)bformatter.Deserialize(stream);
                 }
             }
             catch (Exception)
@@ -75,7 +75,7 @@ namespace TizTaboo
                 using (Stream stream = File.Open(_filepath, FileMode.Create))
                 {
                     var bformatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-                    bformatter.Serialize(stream, _notes);
+                    bformatter.Serialize(stream, Items);
                 }
             }
             catch (Exception)
@@ -87,12 +87,25 @@ namespace TizTaboo
 
         public void Add(faNote Note)
         {
-            _notes.Add(Note);
+            Items.Add(Note);
         }
 
         public faNote GetNodeByAlias(string Alias)
         {
-            return _notes.Find(item => item.Alias == Alias);
+            return Items.Find(item => item.Alias == Alias);
+        }
+
+        public bool DeleteNodeByAlias(string Alias)
+        {
+            faNote note = null;
+            note=Items.Find(item => item.Alias == Alias);
+            if (note != null)
+            {
+                Items.Remove(note);
+                return true;
+            }
+            else
+                return false;
         }
 
         public List<faNote> Seek(string query)
@@ -100,7 +113,7 @@ namespace TizTaboo
             List<faNote> found = new List<faNote>();
             string query_rus = ConvertEngToRus(query);
             string query_eng = ConvertRusToEng(query);
-            found = _notes.FindAll(
+            found = Items.FindAll(
                 delegate(faNote n)
                 {
                     return n.Name.Contains(query_rus) || n.Name.Contains(query_eng) || n.Alias.Contains(query_rus) || n.Alias.Contains(query_eng);

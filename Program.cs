@@ -16,4 +16,7 @@ namespace TizTaboo {
             Application.Run();
         }
     }
+
+    static class Data    {        public static faNotes NoteList { get; set; }
+    }
 }
