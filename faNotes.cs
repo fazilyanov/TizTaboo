@@ -115,12 +115,12 @@ namespace TizTaboo
         public List<faNote> Seek(string query)
         {
             List<faNote> found = new List<faNote>();
-            string query_rus = ConvertEngToRus(query);
-            string query_eng = ConvertRusToEng(query);
+            string query_rus = ConvertEngToRus(query).ToLower();
+            string query_eng = ConvertRusToEng(query).ToLower();
             found = Items.FindAll(
                 delegate(faNote n)
                 {
-                    return n.Name.Contains(query_rus) || n.Name.Contains(query_eng) || n.Alias.Contains(query_rus) || n.Alias.Contains(query_eng);
+                    return n.Name.ToLower().Contains(query_rus) || n.Name.ToLower().Contains(query_eng) || n.Alias.ToLower().Contains(query_rus) || n.Alias.ToLower().Contains(query_eng);
                 });
             return found;
         }

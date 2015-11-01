@@ -125,7 +125,7 @@ namespace TizTaboo
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            _height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 2;
+            _height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 10;
             _width = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
             this.Size = new Size(_width, _height);
             this.Location = new Point(0, -_height);
@@ -151,7 +151,7 @@ namespace TizTaboo
                             Panel panel = new Panel();
                             panel.Name = "subpanel_" + i;
                             panel.Location = new Point(0, (i * 24) + 4);
-                            panel.Size = new Size(750, 20);
+                            panel.Size = new Size(this.Width, 20);
                             panel.BorderStyle = BorderStyle.None;
                             panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
                             panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
@@ -179,7 +179,7 @@ namespace TizTaboo
                         Panel panel = new Panel();
                         panel.Name = "subpanel_" + i;
                         panel.Location = new Point(0, (i * 24) + 4);
-                        panel.Size = new Size(750, 20);
+                        panel.Size = new Size(this.Width, 20);
                         panel.BorderStyle = BorderStyle.None;
                         panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
                         panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
@@ -203,7 +203,7 @@ namespace TizTaboo
                         Panel panel = new Panel();
                         panel.Name = "subpanel_" + i;
                         panel.Location = new Point(0, (i * 24) + 4);
-                        panel.Size = new Size(750, 20);
+                        panel.Size = new Size(this.Width, 20);
                         panel.BorderStyle = BorderStyle.None;
                         panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
                         panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
@@ -227,7 +227,7 @@ namespace TizTaboo
                         Panel panel = new Panel();
                         panel.Name = "subpanel_" + i;
                         panel.Location = new Point(0, (i * 24) + 4);
-                        panel.Size = new Size(750, 20);
+                        panel.Size = new Size(this.Width, 20);
                         panel.BorderStyle = BorderStyle.None;
                         panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
                         panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
@@ -251,7 +251,7 @@ namespace TizTaboo
                         Panel panel = new Panel();
                         panel.Name = "subpanel_" + i;
                         panel.Location = new Point(0, (i * 24) + 4);
-                        panel.Size = new Size(750, 20);
+                        panel.Size = new Size(this.Width, 20);
                         panel.BorderStyle = BorderStyle.None;
                         panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
                         panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;

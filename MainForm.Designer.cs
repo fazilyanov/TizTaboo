@@ -31,11 +31,13 @@
             // 
             // pnl
             // 
+            this.pnl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pnl.BackColor = System.Drawing.Color.Black;
             this.pnl.ForeColor = System.Drawing.Color.White;
             this.pnl.Location = new System.Drawing.Point(0, 19);
             this.pnl.Name = "pnl";
-            this.pnl.Size = new System.Drawing.Size(884, 546);
+            this.pnl.Size = new System.Drawing.Size(765, 546);
             this.pnl.TabIndex = 2;
             // 
             // tbAlias
@@ -66,7 +68,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(884, 562);
+            this.ClientSize = new System.Drawing.Size(766, 562);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbAlias);
             this.Controls.Add(this.pnl);
