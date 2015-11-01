@@ -34,13 +34,15 @@
             this.btnSave = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.tbName = new System.Windows.Forms.TextBox();
+            this.tbParam = new System.Windows.Forms.TextBox();
+            this.label4 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAll)).BeginInit();
             this.SuspendLayout();
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(277, 13);
+            this.label2.Location = new System.Drawing.Point(317, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 13);
             this.label2.TabIndex = 3;
@@ -48,26 +50,28 @@
             // 
             // tbAlias
             // 
-            this.tbAlias.Location = new System.Drawing.Point(280, 27);
+            this.tbAlias.Location = new System.Drawing.Point(320, 26);
             this.tbAlias.Name = "tbAlias";
             this.tbAlias.ReadOnly = true;
-            this.tbAlias.Size = new System.Drawing.Size(231, 20);
+            this.tbAlias.Size = new System.Drawing.Size(369, 20);
             this.tbAlias.TabIndex = 2;
             // 
             // cbType
             // 
+            this.cbType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cbType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbType.Enabled = false;
             this.cbType.FormattingEnabled = true;
-            this.cbType.Location = new System.Drawing.Point(534, 26);
+            this.cbType.Location = new System.Drawing.Point(695, 25);
             this.cbType.Name = "cbType";
-            this.cbType.Size = new System.Drawing.Size(231, 21);
+            this.cbType.Size = new System.Drawing.Size(318, 21);
             this.cbType.TabIndex = 4;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(531, 13);
+            this.label3.Location = new System.Drawing.Point(702, 9);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(26, 13);
             this.label3.TabIndex = 5;
@@ -75,11 +79,13 @@
             // 
             // tbCommand
             // 
+            this.tbCommand.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbCommand.Location = new System.Drawing.Point(9, 57);
             this.tbCommand.Multiline = true;
             this.tbCommand.Name = "tbCommand";
             this.tbCommand.ReadOnly = true;
-            this.tbCommand.Size = new System.Drawing.Size(756, 81);
+            this.tbCommand.Size = new System.Drawing.Size(1004, 62);
             this.tbCommand.TabIndex = 6;
             // 
             // dgvAll
@@ -89,18 +95,17 @@
             this.dgvAll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvAll.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvAll.Location = new System.Drawing.Point(9, 144);
-            this.dgvAll.MultiSelect = false;
+            this.dgvAll.Location = new System.Drawing.Point(9, 151);
             this.dgvAll.Name = "dgvAll";
-            this.dgvAll.ReadOnly = true;
             this.dgvAll.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvAll.Size = new System.Drawing.Size(905, 368);
+            this.dgvAll.Size = new System.Drawing.Size(1155, 361);
             this.dgvAll.TabIndex = 12;
             this.dgvAll.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvAll_CellMouseClick);
             // 
             // btnNew
             // 
-            this.btnNew.Location = new System.Drawing.Point(771, 26);
+            this.btnNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnNew.Location = new System.Drawing.Point(1021, 23);
             this.btnNew.Name = "btnNew";
             this.btnNew.Size = new System.Drawing.Size(143, 25);
             this.btnNew.TabIndex = 13;
@@ -110,7 +115,8 @@
             // 
             // btnDel
             // 
-            this.btnDel.Location = new System.Drawing.Point(771, 57);
+            this.btnDel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDel.Location = new System.Drawing.Point(1021, 54);
             this.btnDel.Name = "btnDel";
             this.btnDel.Size = new System.Drawing.Size(143, 25);
             this.btnDel.TabIndex = 14;
@@ -120,7 +126,8 @@
             // 
             // btnSave
             // 
-            this.btnSave.Location = new System.Drawing.Point(771, 88);
+            this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSave.Location = new System.Drawing.Point(1021, 85);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(143, 50);
             this.btnSave.TabIndex = 15;
@@ -131,7 +138,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 13);
+            this.label1.Location = new System.Drawing.Point(6, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(29, 13);
             this.label1.TabIndex = 17;
@@ -139,17 +146,38 @@
             // 
             // tbName
             // 
-            this.tbName.Location = new System.Drawing.Point(9, 29);
+            this.tbName.Location = new System.Drawing.Point(9, 26);
             this.tbName.Name = "tbName";
             this.tbName.ReadOnly = true;
-            this.tbName.Size = new System.Drawing.Size(253, 20);
+            this.tbName.Size = new System.Drawing.Size(305, 20);
             this.tbName.TabIndex = 16;
+            // 
+            // tbParam
+            // 
+            this.tbParam.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbParam.Location = new System.Drawing.Point(70, 125);
+            this.tbParam.Name = "tbParam";
+            this.tbParam.ReadOnly = true;
+            this.tbParam.Size = new System.Drawing.Size(943, 20);
+            this.tbParam.TabIndex = 18;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 127);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(58, 13);
+            this.label4.TabIndex = 19;
+            this.label4.Text = "Параметр";
             // 
             // SettForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(924, 524);
+            this.ClientSize = new System.Drawing.Size(1174, 522);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.tbParam);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.tbName);
             this.Controls.Add(this.btnSave);
@@ -184,5 +212,7 @@
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbName;
+        private System.Windows.Forms.TextBox tbParam;
+        private System.Windows.Forms.Label label4;
     }
 }

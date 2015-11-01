@@ -7,11 +7,11 @@ namespace TizTaboo
 {
     enum faType
     {
-        None=0,
-        URL=1,
-        FileName=2,
-        MultiAlias=3,
-        Batch=4
+        None = 0,
+        URL = 1,
+        FileName = 2,
+        MultiAlias = 3,
+        Batch = 4
     }
 
     [Serializable]
@@ -20,14 +20,16 @@ namespace TizTaboo
         public string Name;
         public string Alias;
         public string Command;
+        public string Param;
         public faType Type;
         public DateTime LastExec;
 
-        public faNote(string Name, string Alias, string Command, faType Type)
+        public faNote(string Name, string Alias, string Command, string Param, faType Type)
         {
             this.Name = Name;
             this.Alias = Alias;
             this.Command = Command;
+            this.Param = Param;
             this.Type = Type;
             this.LastExec = DateTime.Now;
         }
@@ -80,7 +82,7 @@ namespace TizTaboo
             }
             catch (Exception)
             {
-                return false;                
+                return false;
             }
             return true;
         }
@@ -90,6 +92,8 @@ namespace TizTaboo
             Items.Add(Note);
         }
 
+
+
         public faNote GetNodeByAlias(string Alias)
         {
             return Items.Find(item => item.Alias == Alias);
@@ -98,7 +102,7 @@ namespace TizTaboo
         public bool DeleteNodeByAlias(string Alias)
         {
             faNote note = null;
-            note=Items.Find(item => item.Alias == Alias);
+            note = Items.Find(item => item.Alias == Alias);
             if (note != null)
             {
                 Items.Remove(note);

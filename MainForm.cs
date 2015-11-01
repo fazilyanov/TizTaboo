@@ -17,7 +17,7 @@ namespace TizTaboo
     public partial class MainForm : Form
     {
         private readonly HotKeyManager _hotKeyManager;
-        
+
 
         int i = 0;
         int si = 0;
@@ -99,7 +99,7 @@ namespace TizTaboo
                 {
                     Properties.Settings.Default.basepath = Application.StartupPath + "\\data.bin";
                     Data.NoteList = new faNotes(Properties.Settings.Default.basepath);
-                    Data.NoteList.Add(new faNote("Тест", "test", "https://vk.com", faType.URL));
+                    Data.NoteList.Add(new faNote("Тест", "test", "https://vk.com","", faType.URL));
                     if (!Data.NoteList.Save())
                     {
                         MessageBox.Show("Ошибка создания базы!");
@@ -321,7 +321,7 @@ namespace TizTaboo
                                     break;
                                 case faType.URL:
                                 case faType.FileName:
-                                    Process.Start(note.Command);
+                                    Process.Start(note.Command, note.Param);
                                     break;
                                 case faType.Batch:
                                     System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", note.Command);
@@ -376,13 +376,7 @@ namespace TizTaboo
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.WindowsShutDown)
-                Data.NoteList.Save();
-            else
-            {
-                HideForm();
-                e.Cancel = true;
-            }
+            Data.NoteList.Save();
         }
     }
 }

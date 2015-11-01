@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace TizTaboo {
-    static class Program {
+namespace TizTaboo
+{
+    static class Program
+    {
         /// <summary>
         /// Главная точка входа для приложения.
         /// </summary>
         [STAThread]
-        static void Main() {
+        static void Main()
+        {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            new MainForm();
-            Application.Run();
+            Application.Run(new MainForm());
         }
     }
 
-    static class Data    {        public static faNotes NoteList { get; set; }
+    static class Data
+    {
+        public static faNotes NoteList { get; set; }
     }
 }
