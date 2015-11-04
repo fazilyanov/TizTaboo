@@ -2,12 +2,6 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="TizTaboo.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="basepath" Type="System.String" Scope="User">
-      <Value Profile="(Default)">db.sdf</Value>
-    </Setting>
-    <Setting Name="constr" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="lastbackup" Type="System.String" Scope="User">
       <Value Profile="(Default)">1</Value>
     </Setting>

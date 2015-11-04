@@ -21,7 +21,7 @@ namespace TizTaboo
 
         int i = 0;
         int si = 0;
-
+        string _basepath = "";
         public int _height;
         public int _width;
 
@@ -64,55 +64,38 @@ namespace TizTaboo
             }
             catch
             {
-                MessageBox.Show("Не удалось зарегистрировать глобальные горячие клавишы! Возможно, приложение уже запущено.","Ошибка");
+                MessageBox.Show("Не удалось зарегистрировать глобальные горячие клавишы! Возможно, приложение уже запущено.", "Ошибка");
                 Environment.Exit(-1);
             }
 
-            bool badfile = false;
+            _basepath = Application.StartupPath + "\\" + "data.bin";
 
-            if (File.Exists(Properties.Settings.Default.basepath))
+            if (File.Exists(_basepath))
             {
                 int _n = int.Parse((Properties.Settings.Default.lastbackup ?? "0").ToString());
                 _n = _n < 10 ? _n + 1 : 1;
-                File.Copy(Properties.Settings.Default.basepath, Properties.Settings.Default.basepath + "_" + _n.ToString(), true);
+                File.Copy(_basepath, _basepath + "_" + _n.ToString(), true);
                 Properties.Settings.Default.lastbackup = _n.ToString();
-                Data.NoteList = new faNotes(Properties.Settings.Default.basepath);
-                badfile = !Data.NoteList.Load();
-            }
-            else badfile = true;
+                Properties.Settings.Default.Save();
+                Data.NoteList = new faNotes(_basepath);
+                Data.NoteList.Load();
 
-            while (badfile)
+            }
+            else
             {
-                var result = MessageBox.Show("База данных не найдена или имеет неправильный формат, создать новую? Нет - выбрать другой файл", "TizTaboo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (result == DialogResult.No)
+                var result = MessageBox.Show("База данных не найдена, создать новую?", "TizTaboo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
                 {
-                    OpenFileDialog ofd = new OpenFileDialog();
-                    ofd.InitialDirectory = Application.StartupPath;
-                    ofd.Filter = "bin files|*.bin|all files|*.*";
-                    if (ofd.ShowDialog() == DialogResult.OK)
-                    {
-                        Properties.Settings.Default.basepath = ofd.FileName;
-                        Data.NoteList = new faNotes(ofd.FileName);
-                        badfile = !Data.NoteList.Load();
-                    }
-                }
-                else if (result == DialogResult.Yes)
-                {
-                    Properties.Settings.Default.basepath = Application.StartupPath + "\\data.bin";
-                    Data.NoteList = new faNotes(Properties.Settings.Default.basepath);
+                    Data.NoteList = new faNotes(_basepath);
                     Data.NoteList.Add(new faNote("Тест", "test", "https://vk.com", "", faType.URL));
                     if (!Data.NoteList.Save())
                     {
                         MessageBox.Show("Ошибка создания базы!");
-                        return;
+                        Environment.Exit(-1);
                     }
-                    else badfile = false;
-
                 }
+
             }
-
-
-            Properties.Settings.Default.Save();
         }
 
         void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
@@ -164,9 +147,9 @@ namespace TizTaboo
                             lbl.Name = "label_" + i;
                             lbl.AutoSize = true;
                             lbl.Location = new Point(8, 2);
-                            lbl.Text = note.Name ;
+                            lbl.Text = note.Name;
                             lbl.Font = new Font(lbl.Font.FontFamily, 12);
-                            
+
                             lbl.Visible = true;
 
                             Label lbl2 = new Label();
@@ -202,7 +185,7 @@ namespace TizTaboo
                         panel.Location = new Point(0, (i * 24) + 4);
                         panel.Size = new Size(this.Width, 20);
                         panel.BorderStyle = BorderStyle.None;
-                        panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.LawnGreen; 
+                        panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.LawnGreen;
                         panel.BackColor = (i == 0) ? System.Drawing.Color.LawnGreen : System.Drawing.Color.Black;
                         panel.Parent = pnl;
                         panel.Tag = id[ind];
@@ -214,7 +197,7 @@ namespace TizTaboo
                         lbl.Location = new Point(8, 2);
                         lbl.Text = txt[ind];
                         lbl.Font = new Font(lbl.Font.FontFamily, 12);
-                        
+
                         lbl.Visible = true;
                         panel.Controls.Add(lbl);
 
@@ -298,7 +281,7 @@ namespace TizTaboo
 
         private void tbAlias_KeyDown(object sender, KeyEventArgs e)
         {
-           // Color cl1 = System.Drawing.Color.Black;
+            // Color cl1 = System.Drawing.Color.Black;
             //Color cl2 = System.Drawing.Color.White;
             Color clr;
             if (e.KeyCode == Keys.Down && i > 0 && si < i - 1)
@@ -323,8 +306,8 @@ namespace TizTaboo
             }
             else if (e.KeyCode == Keys.Enter && i > 0)
             {
-                 this.HideForm();
-                 Run(pnl.Controls["subpanel_" + si].Tag.ToString(), tbAlias.Text.Trim());
+                this.HideForm();
+                Run(pnl.Controls["subpanel_" + si].Tag.ToString(), tbAlias.Text.Trim());
             }
             else if (e.KeyCode == Keys.Escape)
                 this.HideForm();
