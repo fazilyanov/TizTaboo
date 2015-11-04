@@ -36,6 +36,7 @@
             this.tbName = new System.Windows.Forms.TextBox();
             this.tbParam = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAll)).BeginInit();
             this.SuspendLayout();
             // 
@@ -65,7 +66,7 @@
             this.cbType.FormattingEnabled = true;
             this.cbType.Location = new System.Drawing.Point(695, 25);
             this.cbType.Name = "cbType";
-            this.cbType.Size = new System.Drawing.Size(318, 21);
+            this.cbType.Size = new System.Drawing.Size(304, 21);
             this.cbType.TabIndex = 4;
             // 
             // label3
@@ -85,27 +86,28 @@
             this.tbCommand.Multiline = true;
             this.tbCommand.Name = "tbCommand";
             this.tbCommand.ReadOnly = true;
-            this.tbCommand.Size = new System.Drawing.Size(1004, 62);
+            this.tbCommand.Size = new System.Drawing.Size(990, 62);
             this.tbCommand.TabIndex = 6;
             // 
             // dgvAll
             // 
             this.dgvAll.AllowUserToAddRows = false;
             this.dgvAll.AllowUserToDeleteRows = false;
-            this.dgvAll.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.dgvAll.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dgvAll.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvAll.Location = new System.Drawing.Point(9, 151);
             this.dgvAll.Name = "dgvAll";
             this.dgvAll.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvAll.Size = new System.Drawing.Size(1155, 361);
+            this.dgvAll.Size = new System.Drawing.Size(1141, 327);
             this.dgvAll.TabIndex = 12;
             this.dgvAll.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvAll_CellMouseClick);
             // 
             // btnNew
             // 
             this.btnNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNew.Location = new System.Drawing.Point(1021, 23);
+            this.btnNew.Location = new System.Drawing.Point(1007, 23);
             this.btnNew.Name = "btnNew";
             this.btnNew.Size = new System.Drawing.Size(143, 25);
             this.btnNew.TabIndex = 13;
@@ -116,7 +118,7 @@
             // btnDel
             // 
             this.btnDel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDel.Location = new System.Drawing.Point(1021, 54);
+            this.btnDel.Location = new System.Drawing.Point(1007, 54);
             this.btnDel.Name = "btnDel";
             this.btnDel.Size = new System.Drawing.Size(143, 25);
             this.btnDel.TabIndex = 14;
@@ -127,7 +129,7 @@
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.Location = new System.Drawing.Point(1021, 85);
+            this.btnSave.Location = new System.Drawing.Point(1007, 85);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(143, 50);
             this.btnSave.TabIndex = 15;
@@ -159,7 +161,7 @@
             this.tbParam.Location = new System.Drawing.Point(70, 125);
             this.tbParam.Name = "tbParam";
             this.tbParam.ReadOnly = true;
-            this.tbParam.Size = new System.Drawing.Size(943, 20);
+            this.tbParam.Size = new System.Drawing.Size(929, 20);
             this.tbParam.TabIndex = 18;
             // 
             // label4
@@ -171,11 +173,24 @@
             this.label4.TabIndex = 19;
             this.label4.Text = "Параметр";
             // 
+            // button1
+            // 
+            this.button1.ForeColor = System.Drawing.Color.LawnGreen;
+            this.button1.Location = new System.Drawing.Point(1020, 122);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 20;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // SettForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1174, 522);
+            this.ClientSize = new System.Drawing.Size(1160, 488);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.tbParam);
             this.Controls.Add(this.label1);
@@ -214,5 +229,6 @@
         private System.Windows.Forms.TextBox tbName;
         private System.Windows.Forms.TextBox tbParam;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Button button1;
     }
 }

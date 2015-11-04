@@ -9,7 +9,7 @@ namespace TizTaboo
     {
         None = 0,
         URL = 1,
-        FileName = 2,
+        Windows = 2,
         MultiAlias = 3,
         Batch = 4
     }
@@ -122,6 +122,7 @@ namespace TizTaboo
                 {
                     return n.Name.ToLower().Contains(query_rus) || n.Name.ToLower().Contains(query_eng) || n.Alias.ToLower().Contains(query_rus) || n.Alias.ToLower().Contains(query_eng);
                 });
+            found.Sort((a, b) => b.LastExec.CompareTo(a.LastExec));
             return found;
         }
 

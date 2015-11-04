@@ -62,9 +62,10 @@ namespace TizTaboo
                 _hotKeyManager.KeyPressed += HotKeyManagerPressed;
                 _hotKeyManager.Register(System.Windows.Input.Key.X, System.Windows.Input.ModifierKeys.Alt);
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show("Не удалось зарегистрировать глобальные горячие клавишы! Возможно, приложение уже запущено.","Ошибка");
+                Environment.Exit(-1);
             }
 
             bool badfile = false;
@@ -99,7 +100,7 @@ namespace TizTaboo
                 {
                     Properties.Settings.Default.basepath = Application.StartupPath + "\\data.bin";
                     Data.NoteList = new faNotes(Properties.Settings.Default.basepath);
-                    Data.NoteList.Add(new faNote("Тест", "test", "https://vk.com","", faType.URL));
+                    Data.NoteList.Add(new faNote("Тест", "test", "https://vk.com", "", faType.URL));
                     if (!Data.NoteList.Save())
                     {
                         MessageBox.Show("Ошибка создания базы!");
@@ -125,7 +126,7 @@ namespace TizTaboo
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            _height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 10;
+            _height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 2;
             _width = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
             this.Size = new Size(_width, _height);
             this.Location = new Point(0, -_height);
@@ -163,18 +164,38 @@ namespace TizTaboo
                             lbl.Name = "label_" + i;
                             lbl.AutoSize = true;
                             lbl.Location = new Point(8, 2);
-                            lbl.Text = note.Name;
+                            lbl.Text = note.Name ;
+                            lbl.Font = new Font(lbl.Font.FontFamily, 12);
+                            
                             lbl.Visible = true;
+
+                            Label lbl2 = new Label();
+                            lbl2.Parent = panel;
+                            lbl2.Name = "label2_" + i;
+                            lbl2.AutoSize = true;
+                            lbl2.Location = new Point(lbl.Width + 4, 2);
+                            lbl2.Text = " (" + note.Alias + ")";
+                            lbl2.ForeColor = Color.Gray;
+                            //lbl2.Font = new Font(lbl.Font, FontStyle.Bold);
+                            lbl2.Visible = true;
+
 
                             panel.Controls.Add(lbl);
                             pnl.Controls.Add(panel);
                             i++;
-                            if (i == 13)
-                                break;
+                            //if (i == 13)
+                            //    break;
                         }
                     }
 
-                    if (i < 13)
+                    string[] id = { "-1", "-2", "-3", "-4" };
+                    string[] txt = { 
+                                       ">>> Искать «" + tbAlias.Text + "» в Гугле",
+                                       ">>> Перевести «" + tbAlias.Text + "» на английский" ,
+                                       ">>> Перевести «" + tbAlias.Text + "» на русский",
+                                       ">>> Выполнить «" + tbAlias.Text + "» "};
+
+                    for (int ind = 0; ind < id.Length; ind++)
                     {
                         Panel panel = new Panel();
                         panel.Name = "subpanel_" + i;
@@ -184,86 +205,16 @@ namespace TizTaboo
                         panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
                         panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
                         panel.Parent = pnl;
-                        panel.Tag = "-1";
+                        panel.Tag = id[ind];
 
                         Label lbl = new Label();
                         lbl.Parent = panel;
                         lbl.Name = "label_" + i;
                         lbl.AutoSize = true;
                         lbl.Location = new Point(8, 2);
-                        lbl.Text = ">>> Искать «" + tbAlias.Text + "» в Гугле";
-                        lbl.Visible = true;
-                        panel.Controls.Add(lbl);
-
-                        pnl.Controls.Add(panel);
-                        i++;
-                    }
-                    if (i < 13)
-                    {
-                        Panel panel = new Panel();
-                        panel.Name = "subpanel_" + i;
-                        panel.Location = new Point(0, (i * 24) + 4);
-                        panel.Size = new Size(this.Width, 20);
-                        panel.BorderStyle = BorderStyle.None;
-                        panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
-                        panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
-                        panel.Parent = pnl;
-                        panel.Tag = "-2";
-
-                        Label lbl = new Label();
-                        lbl.Parent = panel;
-                        lbl.Name = "label_" + i;
-                        lbl.AutoSize = true;
-                        lbl.Location = new Point(8, 2);
-                        lbl.Text = ">>> Перевести «" + tbAlias.Text + "» на английский";
-                        lbl.Visible = true;
-                        panel.Controls.Add(lbl);
-
-                        pnl.Controls.Add(panel);
-                        i++;
-                    }
-                    if (i < 13)
-                    {
-                        Panel panel = new Panel();
-                        panel.Name = "subpanel_" + i;
-                        panel.Location = new Point(0, (i * 24) + 4);
-                        panel.Size = new Size(this.Width, 20);
-                        panel.BorderStyle = BorderStyle.None;
-                        panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
-                        panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
-                        panel.Parent = pnl;
-                        panel.Tag = "-3";
-
-                        Label lbl = new Label();
-                        lbl.Parent = panel;
-                        lbl.Name = "label_" + i;
-                        lbl.AutoSize = true;
-                        lbl.Location = new Point(8, 2);
-                        lbl.Text = ">>> Перевести «" + tbAlias.Text + "» на русский";
-                        lbl.Visible = true;
-                        panel.Controls.Add(lbl);
-
-                        pnl.Controls.Add(panel);
-                        i++;
-                    }
-                    if (i < 13)
-                    {
-                        Panel panel = new Panel();
-                        panel.Name = "subpanel_" + i;
-                        panel.Location = new Point(0, (i * 24) + 4);
-                        panel.Size = new Size(this.Width, 20);
-                        panel.BorderStyle = BorderStyle.None;
-                        panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
-                        panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
-                        panel.Parent = pnl;
-                        panel.Tag = "-4";
-
-                        Label lbl = new Label();
-                        lbl.Parent = panel;
-                        lbl.Name = "label_" + i;
-                        lbl.AutoSize = true;
-                        lbl.Location = new Point(8, 2);
-                        lbl.Text = ">>> Выполнить «" + tbAlias.Text + "» ";
+                        lbl.Text = txt[ind];
+                        lbl.Font = new Font(lbl.Font.FontFamily, 12);
+                        lbl.ForeColor = Color.LawnGreen;
                         lbl.Visible = true;
                         panel.Controls.Add(lbl);
 
@@ -320,7 +271,7 @@ namespace TizTaboo
                                 case faType.None:
                                     break;
                                 case faType.URL:
-                                case faType.FileName:
+                                case faType.Windows:
                                     Process.Start(note.Command, note.Param);
                                     break;
                                 case faType.Batch:
@@ -377,6 +328,11 @@ namespace TizTaboo
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             Data.NoteList.Save();
+        }
+
+        private void MainForm_Deactivate(object sender, EventArgs e)
+        {
+            this.HideForm();
         }
     }
 }

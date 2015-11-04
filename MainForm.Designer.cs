@@ -79,6 +79,7 @@
             this.ShowInTaskbar = false;
             this.Text = "TizTaboo";
             this.TopMost = true;
+            this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
