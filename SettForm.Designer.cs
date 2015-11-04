@@ -23,6 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettForm));
             this.label2 = new System.Windows.Forms.Label();
             this.tbAlias = new System.Windows.Forms.TextBox();
             this.cbType = new System.Windows.Forms.ComboBox();
@@ -131,7 +132,7 @@
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnSave.Location = new System.Drawing.Point(1007, 85);
             this.btnSave.Name = "btnSave";
-            this.btnSave.Size = new System.Drawing.Size(143, 50);
+            this.btnSave.Size = new System.Drawing.Size(143, 60);
             this.btnSave.TabIndex = 15;
             this.btnSave.Text = "Сохранить";
             this.btnSave.UseVisualStyleBackColor = true;
@@ -176,7 +177,7 @@
             // button1
             // 
             this.button1.ForeColor = System.Drawing.Color.LawnGreen;
-            this.button1.Location = new System.Drawing.Point(1020, 122);
+            this.button1.Location = new System.Drawing.Point(1039, 151);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 20;
@@ -204,9 +205,10 @@
             this.Controls.Add(this.cbType);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.tbAlias);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SettForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "SettForm";
+            this.Text = "Алиасы";
             this.Load += new System.EventHandler(this.SettForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvAll)).EndInit();
             this.ResumeLayout(false);

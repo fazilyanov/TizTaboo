@@ -48,6 +48,7 @@ namespace TizTaboo
             dgvAll.Columns["when"].Width = 150;
             cbType.DataSource = Enum.GetValues(typeof(faType));
             LoadData();
+            dgvAll.ClearSelection();
         }
 
         private void dgvAll_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)

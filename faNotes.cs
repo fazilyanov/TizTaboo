@@ -92,8 +92,6 @@ namespace TizTaboo
             Items.Add(Note);
         }
 
-
-
         public faNote GetNodeByAlias(string Alias)
         {
             return Items.Find(item => item.Alias == Alias);

@@ -202,8 +202,8 @@ namespace TizTaboo
                         panel.Location = new Point(0, (i * 24) + 4);
                         panel.Size = new Size(this.Width, 20);
                         panel.BorderStyle = BorderStyle.None;
-                        panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.White;
-                        panel.BackColor = (i == 0) ? System.Drawing.Color.White : System.Drawing.Color.Black;
+                        panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.LawnGreen; 
+                        panel.BackColor = (i == 0) ? System.Drawing.Color.LawnGreen : System.Drawing.Color.Black;
                         panel.Parent = pnl;
                         panel.Tag = id[ind];
 
@@ -214,7 +214,7 @@ namespace TizTaboo
                         lbl.Location = new Point(8, 2);
                         lbl.Text = txt[ind];
                         lbl.Font = new Font(lbl.Font.FontFamily, 12);
-                        lbl.ForeColor = Color.LawnGreen;
+                        
                         lbl.Visible = true;
                         panel.Controls.Add(lbl);
 
@@ -298,28 +298,33 @@ namespace TizTaboo
 
         private void tbAlias_KeyDown(object sender, KeyEventArgs e)
         {
-            Color cl1 = System.Drawing.Color.Black;
-            Color cl2 = System.Drawing.Color.White;
+           // Color cl1 = System.Drawing.Color.Black;
+            //Color cl2 = System.Drawing.Color.White;
+            Color clr;
             if (e.KeyCode == Keys.Down && i > 0 && si < i - 1)
             {
-                pnl.Controls["subpanel_" + si].ForeColor = cl2;
-                pnl.Controls["subpanel_" + si].BackColor = cl1;
+                clr = pnl.Controls["subpanel_" + si].ForeColor;
+                pnl.Controls["subpanel_" + si].ForeColor = pnl.Controls["subpanel_" + si].BackColor;
+                pnl.Controls["subpanel_" + si].BackColor = clr;
                 si++;
-                pnl.Controls["subpanel_" + si].ForeColor = cl1;
-                pnl.Controls["subpanel_" + si].BackColor = cl2;
+                clr = pnl.Controls["subpanel_" + si].ForeColor;
+                pnl.Controls["subpanel_" + si].ForeColor = pnl.Controls["subpanel_" + si].BackColor;
+                pnl.Controls["subpanel_" + si].BackColor = clr;
             }
             else if (e.KeyCode == Keys.Up && i > 0 && si > 0)
             {
-                pnl.Controls["subpanel_" + si].ForeColor = cl2;
-                pnl.Controls["subpanel_" + si].BackColor = cl1;
+                clr = pnl.Controls["subpanel_" + si].ForeColor;
+                pnl.Controls["subpanel_" + si].ForeColor = pnl.Controls["subpanel_" + si].BackColor;
+                pnl.Controls["subpanel_" + si].BackColor = clr;
                 si--;
-                pnl.Controls["subpanel_" + si].ForeColor = cl1;
-                pnl.Controls["subpanel_" + si].BackColor = cl2;
+                clr = pnl.Controls["subpanel_" + si].ForeColor;
+                pnl.Controls["subpanel_" + si].ForeColor = pnl.Controls["subpanel_" + si].BackColor;
+                pnl.Controls["subpanel_" + si].BackColor = clr;
             }
             else if (e.KeyCode == Keys.Enter && i > 0)
             {
-                if (Run(pnl.Controls["subpanel_" + si].Tag.ToString(), tbAlias.Text.Trim()))
-                    this.HideForm();
+                 this.HideForm();
+                 Run(pnl.Controls["subpanel_" + si].Tag.ToString(), tbAlias.Text.Trim());
             }
             else if (e.KeyCode == Keys.Escape)
                 this.HideForm();
