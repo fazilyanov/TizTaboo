@@ -262,6 +262,13 @@ namespace TizTaboo
                                     Process.Start(Application.StartupPath + "\\run.bat");
                                     break;
                                 case faType.MultiAlias:
+                                    string[] cmd = note.Command.Split(';');
+                                    foreach (string item in cmd)
+                                    {
+                                        faNote n = Data.NoteList.GetNodeByAlias(item);
+                                        if (n != null)
+                                            Process.Start(n.Command, n.Param);
+                                    }
                                     break;
                                 default:
                                     break;

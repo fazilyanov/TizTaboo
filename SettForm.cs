@@ -26,8 +26,6 @@ namespace TizTaboo
             foreach (faNote note in Data.NoteList.Items)
                 dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString());
 
-
-
         }
 
         private void SettForm_Load(object sender, EventArgs e)
@@ -142,8 +140,6 @@ namespace TizTaboo
                 MessageBox.Show("Нет команды", "Ошибка");
                 return;
             }
-
-            
 
             faType type = faType.None; ;
             Enum.TryParse<faType>(cbType.SelectedValue.ToString(), out type);
