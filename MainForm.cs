@@ -329,5 +329,10 @@ namespace TizTaboo
         {
             this.HideForm();
         }
+
+        private void tbAlias_Leave(object sender, EventArgs e)
+        {
+            this.HideForm();
+        }
     }
 }

@@ -52,6 +52,7 @@
             this.tbAlias.TabIndex = 3;
             this.tbAlias.TextChanged += new System.EventHandler(this.tbAlias_TextChanged);
             this.tbAlias.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbAlias_KeyDown);
+            this.tbAlias.Leave += new System.EventHandler(this.tbAlias_Leave);
             // 
             // label1
             // 

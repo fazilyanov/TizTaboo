@@ -23,6 +23,8 @@ namespace TizTaboo
         private void LoadData()
         {
             dgvAll.Rows.Clear();
+
+            Data.NoteList.Items.Sort((a, b) => a.Name.CompareTo(b.Name));
             foreach (faNote note in Data.NoteList.Items)
                 dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString());
 
@@ -30,7 +32,6 @@ namespace TizTaboo
 
         private void SettForm_Load(object sender, EventArgs e)
         {
-
             dgvAll.Columns.Add("name", "Имя");
             dgvAll.Columns.Add("alias", "Алиас");
             dgvAll.Columns.Add("type", "Тип");
