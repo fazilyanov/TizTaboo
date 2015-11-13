@@ -23,6 +23,7 @@ namespace TizTaboo
         public string Param;
         public faType Type;
         public DateTime LastExec;
+        public int RunCount = 0;
 
         public faNote(string Name, string Alias, string Command, string Param, faType Type)
         {
@@ -120,7 +121,7 @@ namespace TizTaboo
                 {
                     return n.Name.ToLower().Contains(query_rus) || n.Name.ToLower().Contains(query_eng) || n.Alias.ToLower().Contains(query_rus) || n.Alias.ToLower().Contains(query_eng);
                 });
-            found.Sort((a, b) => b.LastExec.CompareTo(a.LastExec));
+            found.Sort((a, b) => b.RunCount.CompareTo(a.RunCount));
             return found;
         }
 

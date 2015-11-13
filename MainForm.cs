@@ -94,7 +94,6 @@ namespace TizTaboo
                         Environment.Exit(-1);
                     }
                 }
-
             }
         }
 
@@ -102,9 +101,10 @@ namespace TizTaboo
         {
             tbAlias.Clear();
             this.ShowForm();
+            tbAlias.Focus();
             this.Activate();
             this.Focus();
-            tbAlias.Focus();
+            this.TopLevel = true;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -114,8 +114,6 @@ namespace TizTaboo
             this.Size = new Size(_width, _height);
             this.Location = new Point(0, -_height);
         }
-
-
 
         private void Seek(string q)
         {
@@ -274,6 +272,7 @@ namespace TizTaboo
                                     break;
                             }
                             note.LastExec = DateTime.Now;
+                            note.RunCount = note.RunCount > 9999 ? 0 : note.RunCount + 1;
                         }
                         break;
                 }

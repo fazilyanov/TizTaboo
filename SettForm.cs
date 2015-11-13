@@ -23,11 +23,9 @@ namespace TizTaboo
         private void LoadData()
         {
             dgvAll.Rows.Clear();
-
             Data.NoteList.Items.Sort((a, b) => a.Name.CompareTo(b.Name));
             foreach (faNote note in Data.NoteList.Items)
-                dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString());
-
+                dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(),note.RunCount.ToString());
         }
 
         private void SettForm_Load(object sender, EventArgs e)
@@ -38,6 +36,7 @@ namespace TizTaboo
             dgvAll.Columns.Add("command", "Путь | Ссылка");
             dgvAll.Columns.Add("param", "Параметр");
             dgvAll.Columns.Add("when", "Последний запуск");
+            dgvAll.Columns.Add("count", "Запускалось");
 
             dgvAll.Columns["name"].Width = 160;
             dgvAll.Columns["alias"].Width = 160;
@@ -45,6 +44,7 @@ namespace TizTaboo
             dgvAll.Columns["command"].Width = 400;
             dgvAll.Columns["param"].Width = 100;
             dgvAll.Columns["when"].Width = 150;
+            dgvAll.Columns["count"].Width = 150;
             cbType.DataSource = Enum.GetValues(typeof(faType));
             LoadData();
             dgvAll.ClearSelection();
