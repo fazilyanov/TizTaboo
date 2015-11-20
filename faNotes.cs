@@ -17,13 +17,20 @@ namespace TizTaboo
     [Serializable]
     class faNote
     {
-        public string Name;
+
+        #region Public Fields
+
         public string Alias;
         public string Command;
-        public string Param;
-        public faType Type;
         public DateTime LastExec;
+        public string Name;
+        public string Param;
         public int RunCount = 0;
+        public faType Type;
+
+        #endregion Public Fields
+
+        #region Public Constructors
 
         public faNote(string Name, string Alias, string Command, string Param, faType Type)
         {
@@ -34,23 +41,70 @@ namespace TizTaboo
             this.Type = Type;
             this.LastExec = DateTime.Now;
         }
+
+        #endregion Public Constructors
+
     }
 
     class faNotes
     {
-        const string English = "qwertyuiop[]asdfghjkl;'zxcvbnm,.";
-        public string Russian = "йцукенгшщзхъфывапролджэячсмитьбю";
-        public int Count
-        {
-            get { return this.Items.Count; }
-        }
+
+        #region Public Fields
+
         public List<faNote> Items;
+
+        #endregion Public Fields
+
+        #region Private Fields
+
+        const string English = "qwertyuiop[]asdfghjkl;'zxcvbnm,.";
+        const string Russian = "йцукенгшщзхъфывапролджэячсмитьбю";
         private string _filepath;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public faNotes(string FilePath)
         {
             Items = new List<faNote>();
             _filepath = FilePath;
+        }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public int Count
+        {
+            get { return this.Items.Count; }
+        }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        public void Add(faNote Note)
+        {
+            Items.Add(Note);
+        }
+
+        public bool DeleteNodeByAlias(string Alias)
+        {
+            faNote note = null;
+            note = Items.Find(item => item.Alias == Alias);
+            if (note != null)
+            {
+                Items.Remove(note);
+                return true;
+            }
+            else
+                return false;
+        }
+
+        public faNote GetNodeByAlias(string Alias)
+        {
+            return Items.Find(item => item.Alias == Alias);
         }
 
         public bool Load()
@@ -87,30 +141,6 @@ namespace TizTaboo
             }
             return true;
         }
-
-        public void Add(faNote Note)
-        {
-            Items.Add(Note);
-        }
-
-        public faNote GetNodeByAlias(string Alias)
-        {
-            return Items.Find(item => item.Alias == Alias);
-        }
-
-        public bool DeleteNodeByAlias(string Alias)
-        {
-            faNote note = null;
-            note = Items.Find(item => item.Alias == Alias);
-            if (note != null)
-            {
-                Items.Remove(note);
-                return true;
-            }
-            else
-                return false;
-        }
-
         public List<faNote> Seek(string query)
         {
             List<faNote> found = new List<faNote>();
@@ -124,6 +154,10 @@ namespace TizTaboo
             found.Sort((a, b) => b.RunCount.CompareTo(a.RunCount));
             return found;
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private string ConvertEngToRus(string input)
         {
@@ -142,6 +176,8 @@ namespace TizTaboo
                 result.Append((index = Russian.IndexOf(symbol)) != -1 ? English[index] : symbol);
             return result.ToString();
         }
+
+        #endregion Private Methods
 
     }
 }

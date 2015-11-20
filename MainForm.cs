@@ -1,57 +1,35 @@
-﻿using System;
-using System.Data.SqlServerCe;
+﻿using GlobalHotKey;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Text;
-using System.Windows.Forms;
-using System.Windows.Input;
-using GlobalHotKey;
-using System.Diagnostics;
-using System.Net;
 using System.Threading;
-using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace TizTaboo
 {
-
     public partial class MainForm : Form
     {
-        private readonly HotKeyManager _hotKeyManager;
 
+        #region Public Fields
 
-        int i = 0;
-        int si = 0;
-        string _basepath = "";
         public int _height;
         public int _width;
 
-        private void ShowForm()
-        {
-            this.Show();
-            for (int y = 0; y < 100; y++)
-            {
-                if (this.Location.Y + y > 0)
-                {
-                    this.Location = new Point(0, 0);
-                    break;
-                }
-                this.Location = new Point(0, this.Location.Y + y);
-                Thread.Sleep(7);
-            }
-        }
-        private void HideForm()
-        {
-            for (int y = 0; y < 100; y++)
-            {
-                if (this.Location.Y - y < -_height)
-                {
-                    this.Location = new Point(0, -_height);
-                    break;
-                }
-                this.Location = new Point(0, this.Location.Y - y);
-                Thread.Sleep(7);
-            }
-        }
+        #endregion Public Fields
+
+        #region Private Fields
+
+        private readonly HotKeyManager _hotKeyManager;
+
+        private string _basepath = "";
+        private int i = 0;
+        private int si = 0;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public MainForm()
         {
@@ -79,7 +57,6 @@ namespace TizTaboo
                 Properties.Settings.Default.Save();
                 Data.NoteList = new faNotes(_basepath);
                 Data.NoteList.Load();
-
             }
             else
             {
@@ -97,14 +74,39 @@ namespace TizTaboo
             }
         }
 
-        void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
+        #endregion Public Constructors
+
+        #region Private Methods
+
+        private void HideForm()
+        {
+            for (int y = 0; y < 100; y++)
+            {
+                if (this.Location.Y - y < -_height)
+                {
+                    this.Location = new Point(0, -_height);
+                    break;
+                }
+                this.Location = new Point(0, this.Location.Y - y);
+                Thread.Sleep(7);
+            }
+        }
+
+        private void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
         {
             tbAlias.Clear();
             this.ShowForm();
-            tbAlias.Focus();
-            this.Activate();
-            this.Focus();
             this.TopLevel = true;
+        }
+
+        private void MainForm_Deactivate(object sender, EventArgs e)
+        {
+            this.HideForm();
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Data.NoteList.Save();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -113,6 +115,75 @@ namespace TizTaboo
             _width = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
             this.Size = new Size(_width, _height);
             this.Location = new Point(0, -_height);
+        }
+
+        private bool Run(string alias, string query)
+        {
+            bool ret = true;
+            try
+            {
+                switch (alias)
+                {
+                    case "-1":
+                        Process.Start("https://www.google.ru/search?q=" + Uri.EscapeDataString(query));
+                        break;
+
+                    case "-2":
+                        Process.Start("https://translate.google.ru/#ru/en/" + Uri.EscapeDataString(query));
+                        break;
+
+                    case "-3":
+                        Process.Start("https://translate.google.ru/#en/ru/" + Uri.EscapeDataString(query));
+                        break;
+
+                    case "-4":
+                        System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", query + "\n@pause");
+                        Process.Start(Application.StartupPath + "\\run.bat");
+                        break;
+
+                    default:
+                        {
+                            faNote note = Data.NoteList.GetNodeByAlias(alias);
+                            switch (note.Type)
+                            {
+                                case faType.None:
+                                    break;
+
+                                case faType.URL:
+                                case faType.Windows:
+                                    Process.Start(note.Command, note.Param);
+                                    break;
+
+                                case faType.Batch:
+                                    System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", note.Command);
+                                    Process.Start(Application.StartupPath + "\\run.bat");
+                                    break;
+
+                                case faType.MultiAlias:
+                                    string[] cmd = note.Command.Split(';');
+                                    foreach (string item in cmd)
+                                    {
+                                        faNote n = Data.NoteList.GetNodeByAlias(item);
+                                        if (n != null)
+                                            Process.Start(n.Command, n.Param);
+                                    }
+                                    break;
+
+                                default:
+                                    break;
+                            }
+                            note.LastExec = DateTime.Now;
+                            note.RunCount = note.RunCount > 9999 ? 0 : note.RunCount + 1;
+                        }
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                ret = false;
+                MessageBox.Show(ex.Message);
+            }
+            return ret;
         }
 
         private void Seek(string q)
@@ -160,7 +231,6 @@ namespace TizTaboo
                             //lbl2.Font = new Font(lbl.Font, FontStyle.Bold);
                             lbl2.Visible = true;
 
-
                             panel.Controls.Add(lbl);
                             pnl.Controls.Add(panel);
                             i++;
@@ -170,7 +240,7 @@ namespace TizTaboo
                     }
 
                     string[] id = { "-1", "-2", "-3", "-4" };
-                    string[] txt = { 
+                    string[] txt = {
                                        ">>> Искать «" + tbAlias.Text + "» в Гугле",
                                        ">>> Перевести «" + tbAlias.Text + "» на английский" ,
                                        ">>> Перевести «" + tbAlias.Text + "» на русский",
@@ -210,81 +280,24 @@ namespace TizTaboo
             }
         }
 
-        private void tbAlias_TextChanged(object sender, EventArgs e)
+        private void ShowForm()
         {
-            if (tbAlias.Text.Trim().Contains("`") || tbAlias.Text.Trim().Contains("ё"))
-            {
-                HideForm();
-                SettForm newForm = new SettForm();
-                tbAlias.Clear();
-                newForm.ShowDialog();
-                this.ShowForm();
-            }
-            else
-                Seek(tbAlias.Text);
-        }
+            this.Show();
+            this.Activate();
+            this.Focus();
+            tbAlias.Focus();
 
-        private bool Run(string alias, string query)
-        {
-            bool ret = true;
-            try
+            for (int y = 0; y < 100; y++)
             {
-                switch (alias)
+                if (this.Location.Y + y > 0)
                 {
-                    case "-1":
-                        Process.Start("https://www.google.ru/search?q=" + Uri.EscapeDataString(query));
-                        break;
-                    case "-2":
-                        Process.Start("https://translate.google.ru/#ru/en/" + Uri.EscapeDataString(query));
-                        break;
-                    case "-3":
-                        Process.Start("https://translate.google.ru/#en/ru/" + Uri.EscapeDataString(query));
-                        break;
-                    case "-4":
-                        System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", query + "\n@pause");
-                        Process.Start(Application.StartupPath + "\\run.bat");
-                        break;
-                    default:
-                        {
-                            faNote note = Data.NoteList.GetNodeByAlias(alias);
-                            switch (note.Type)
-                            {
-                                case faType.None:
-                                    break;
-                                case faType.URL:
-                                case faType.Windows:
-                                    Process.Start(note.Command, note.Param);
-                                    break;
-                                case faType.Batch:
-                                    System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", note.Command);
-                                    Process.Start(Application.StartupPath + "\\run.bat");
-                                    break;
-                                case faType.MultiAlias:
-                                    string[] cmd = note.Command.Split(';');
-                                    foreach (string item in cmd)
-                                    {
-                                        faNote n = Data.NoteList.GetNodeByAlias(item);
-                                        if (n != null)
-                                            Process.Start(n.Command, n.Param);
-                                    }
-                                    break;
-                                default:
-                                    break;
-                            }
-                            note.LastExec = DateTime.Now;
-                            note.RunCount = note.RunCount > 9999 ? 0 : note.RunCount + 1;
-                        }
-                        break;
+                    this.Location = new Point(0, 0);
+                    break;
                 }
+                this.Location = new Point(0, this.Location.Y + y);
+                Thread.Sleep(7);
             }
-            catch (Exception ex)
-            {
-                ret = false;
-                MessageBox.Show(ex.Message);
-            }
-            return ret;
         }
-
         private void tbAlias_KeyDown(object sender, KeyEventArgs e)
         {
             // Color cl1 = System.Drawing.Color.Black;
@@ -319,19 +332,26 @@ namespace TizTaboo
                 this.HideForm();
         }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Data.NoteList.Save();
-        }
-
-        private void MainForm_Deactivate(object sender, EventArgs e)
-        {
-            this.HideForm();
-        }
-
         private void tbAlias_Leave(object sender, EventArgs e)
         {
             this.HideForm();
         }
+
+        private void tbAlias_TextChanged(object sender, EventArgs e)
+        {
+            if (tbAlias.Text.Trim().Contains("`") || tbAlias.Text.Trim().Contains("ё"))
+            {
+                HideForm();
+                SettForm newForm = new SettForm();
+                tbAlias.Clear();
+                newForm.ShowDialog();
+                this.ShowForm();
+            }
+            else
+                Seek(tbAlias.Text);
+        }
+
+        #endregion Private Methods
+
     }
 }

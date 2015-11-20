@@ -12,77 +12,33 @@ namespace TizTaboo
 {
     public partial class SettForm : Form
     {
+        #region Private Fields
+
         private bool addmode = true;
         private string curalias = "";
         private string curname = "";
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
         public SettForm()
         {
             InitializeComponent();
         }
 
-        private void LoadData()
-        {
-            dgvAll.Rows.Clear();
-            Data.NoteList.Items.Sort((a, b) => a.Name.CompareTo(b.Name));
-            foreach (faNote note in Data.NoteList.Items)
-                dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(),note.RunCount.ToString());
-        }
+        #endregion Public Constructors
 
-        private void SettForm_Load(object sender, EventArgs e)
-        {
-            dgvAll.Columns.Add("name", "Имя");
-            dgvAll.Columns.Add("alias", "Алиас");
-            dgvAll.Columns.Add("type", "Тип");
-            dgvAll.Columns.Add("command", "Путь | Ссылка");
-            dgvAll.Columns.Add("param", "Параметр");
-            dgvAll.Columns.Add("when", "Последний запуск");
-            dgvAll.Columns.Add("count", "Запускалось");
+        #region Private Methods
 
-            dgvAll.Columns["name"].Width = 160;
-            dgvAll.Columns["alias"].Width = 160;
-            dgvAll.Columns["type"].Width = 100;
-            dgvAll.Columns["command"].Width = 400;
-            dgvAll.Columns["param"].Width = 100;
-            dgvAll.Columns["when"].Width = 150;
-            dgvAll.Columns["count"].Width = 150;
-            cbType.DataSource = Enum.GetValues(typeof(faType));
-            LoadData();
+        private void btnDel_Click(object sender, EventArgs e)
+        {
+            if (!addmode && MessageBox.Show("Удалить запись " + curname + "(" + curalias + ")" + "?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                if (Data.NoteList.DeleteNodeByAlias(tbAlias.Text)) LoadData();
+                else MessageBox.Show("Не удалось удалить запись!");
+            }
             dgvAll.ClearSelection();
-        }
-
-        private void dgvAll_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            try
-            {
-                if (e.RowIndex > -1)
-                {
-                    faType type = faType.None; ;
-                    Enum.TryParse<faType>(dgvAll.Rows[e.RowIndex].Cells["type"].Value.ToString(), out type);
-                    cbType.SelectedIndex = (int)type;
-                    cbType.Enabled = true;
-
-                    tbName.ReadOnly = false;
-                    tbName.Text = curname = dgvAll.Rows[e.RowIndex].Cells["name"].Value.ToString().Trim();
-
-                    tbAlias.ReadOnly = false;
-                    tbAlias.Text = curalias = dgvAll.Rows[e.RowIndex].Cells["alias"].Value.ToString().Trim();
-
-                    tbCommand.ReadOnly = false;
-                    tbCommand.Text = dgvAll.Rows[e.RowIndex].Cells["command"].Value.ToString();
-
-                    tbParam.ReadOnly = false;
-                    tbParam.Text = dgvAll.Rows[e.RowIndex].Cells["param"].Value.ToString();
-
-                    btnSave.Text = "Сохранить";
-                    addmode = false;
-
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-
-            }
         }
 
         private void btnNew_Click(object sender, EventArgs e)
@@ -106,15 +62,6 @@ namespace TizTaboo
             btnSave.Text = "Добавить";
             addmode = true;
 
-        }
-
-        private void btnDel_Click(object sender, EventArgs e)
-        {
-            if (!addmode && MessageBox.Show("Удалить запись " + curname + "(" + curalias + ")" + "?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                if (Data.NoteList.DeleteNodeByAlias(tbAlias.Text)) LoadData();
-                else MessageBox.Show("Не удалось удалить запись!");
-            }
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -255,5 +202,72 @@ namespace TizTaboo
             Data.NoteList.Add(new faNote(@"Servicedesk", @"servicedesk", @"start /DC:\Program Files\Internet Explorer\ iexplore.exe https://servicedesk.stg.ru/default.aspx?m=1", "", faType.Batch));
 
         }
+
+        private void dgvAll_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            try
+            {
+                if (e.RowIndex > -1)
+                {
+                    faType type = faType.None; ;
+                    Enum.TryParse<faType>(dgvAll.Rows[e.RowIndex].Cells["type"].Value.ToString(), out type);
+                    cbType.SelectedIndex = (int)type;
+                    cbType.Enabled = true;
+
+                    tbName.ReadOnly = false;
+                    tbName.Text = curname = dgvAll.Rows[e.RowIndex].Cells["name"].Value.ToString().Trim();
+
+                    tbAlias.ReadOnly = false;
+                    tbAlias.Text = curalias = dgvAll.Rows[e.RowIndex].Cells["alias"].Value.ToString().Trim();
+
+                    tbCommand.ReadOnly = false;
+                    tbCommand.Text = dgvAll.Rows[e.RowIndex].Cells["command"].Value.ToString();
+
+                    tbParam.ReadOnly = false;
+                    tbParam.Text = dgvAll.Rows[e.RowIndex].Cells["param"].Value.ToString();
+
+                    btnSave.Text = "Сохранить";
+                    addmode = false;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+
+            }
+        }
+
+        private void LoadData()
+        {
+            dgvAll.Rows.Clear();
+            Data.NoteList.Items.Sort((a, b) => a.Name.CompareTo(b.Name));
+            foreach (faNote note in Data.NoteList.Items)
+                dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(),note.RunCount.ToString());
+        }
+
+        private void SettForm_Load(object sender, EventArgs e)
+        {
+            dgvAll.Columns.Add("name", "Имя");
+            dgvAll.Columns.Add("alias", "Алиас");
+            dgvAll.Columns.Add("type", "Тип");
+            dgvAll.Columns.Add("command", "Путь | Ссылка");
+            dgvAll.Columns.Add("param", "Параметр");
+            dgvAll.Columns.Add("when", "Последний запуск");
+            dgvAll.Columns.Add("count", "Запускалось");
+
+            dgvAll.Columns["name"].Width = 160;
+            dgvAll.Columns["alias"].Width = 160;
+            dgvAll.Columns["type"].Width = 100;
+            dgvAll.Columns["command"].Width = 400;
+            dgvAll.Columns["param"].Width = 100;
+            dgvAll.Columns["when"].Width = 150;
+            dgvAll.Columns["count"].Width = 150;
+            cbType.DataSource = Enum.GetValues(typeof(faType));
+            LoadData();
+            dgvAll.ClearSelection();
+        }
+
+        #endregion Private Methods
     }
 }
