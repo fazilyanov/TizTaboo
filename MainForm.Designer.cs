@@ -49,7 +49,8 @@
             this.tbAlias.Location = new System.Drawing.Point(20, 2);
             this.tbAlias.Name = "tbAlias";
             this.tbAlias.Size = new System.Drawing.Size(862, 15);
-            this.tbAlias.TabIndex = 3;
+            this.tbAlias.TabIndex = 1;
+            this.tbAlias.TabStop = false;
             this.tbAlias.TextChanged += new System.EventHandler(this.tbAlias_TextChanged);
             this.tbAlias.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbAlias_KeyDown);
             this.tbAlias.Leave += new System.EventHandler(this.tbAlias_Leave);

@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using System.Data.SqlServerCe;
 
 namespace TizTaboo
 {
@@ -61,7 +54,6 @@ namespace TizTaboo
             dgvAll.ClearSelection();
             btnSave.Text = "Добавить";
             addmode = true;
-
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -125,7 +117,6 @@ namespace TizTaboo
             Data.NoteList.Save();
             LoadData();
             btnNew_Click(null, null);
-
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -200,7 +191,6 @@ namespace TizTaboo
             Data.NoteList.Add(new faNote(@"Uninstall", @"Uninstall", @"rundll32.exe shell32.dll,Control_RunDLL appwiz.cpl", "", faType.Batch));
             Data.NoteList.Add(new faNote(@"Спать", @"Shutdown", @"shutdown /h", "", faType.Batch));
             Data.NoteList.Add(new faNote(@"Servicedesk", @"servicedesk", @"start /DC:\Program Files\Internet Explorer\ iexplore.exe https://servicedesk.stg.ru/default.aspx?m=1", "", faType.Batch));
-
         }
 
         private void dgvAll_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -228,13 +218,11 @@ namespace TizTaboo
 
                     btnSave.Text = "Сохранить";
                     addmode = false;
-
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-
             }
         }
 
@@ -243,7 +231,7 @@ namespace TizTaboo
             dgvAll.Rows.Clear();
             Data.NoteList.Items.Sort((a, b) => a.Name.CompareTo(b.Name));
             foreach (faNote note in Data.NoteList.Items)
-                dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(),note.RunCount.ToString());
+                dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(), note.RunCount.ToString());
         }
 
         private void SettForm_Load(object sender, EventArgs e)

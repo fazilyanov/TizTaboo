@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -11,7 +12,6 @@ namespace TizTaboo
 {
     public partial class MainForm : Form
     {
-
         #region Public Fields
 
         public int _height;
@@ -78,6 +78,55 @@ namespace TizTaboo
 
         #region Private Methods
 
+        private string[] GoogleSeek(string q)
+        {
+            string[] ret = null;
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://google.ru/complete/search?output=firefox&client=firefox&hl=ru&q=" + Uri.EscapeDataString(q));
+                request.Proxy.Credentials = CredentialCache.DefaultCredentials;
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    string responseText = "";
+                    using (var reader = new System.IO.StreamReader(response.GetResponseStream(), System.Text.Encoding.Default))
+                    {
+                        responseText = reader.ReadToEnd();
+                    }
+                    responseText = responseText.Trim();
+                    if (responseText.Length > 0 && responseText.StartsWith("["))
+                    {
+                        int si = responseText.IndexOf('[', 1);
+                        int ei = 0;
+                        if (si > 0)
+                        {
+                            ei = responseText.IndexOf(']', si);
+                            if (ei > 0)
+                            {
+                                responseText = responseText.Substring(si + 1, ei - si - 1);
+                                if (responseText.Length > 0)
+                                {
+                                    ret = responseText.Split(',');
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("Такой страницы нет.");
+                }
+                response.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+                throw;
+            }
+
+            return ret;
+        }
+
         private void HideForm()
         {
             for (int y = 0; y < 100; y++)
@@ -124,19 +173,16 @@ namespace TizTaboo
             {
                 switch (alias)
                 {
+                   
                     case "-1":
-                        Process.Start("https://www.google.ru/search?q=" + Uri.EscapeDataString(query));
-                        break;
-
-                    case "-2":
                         Process.Start("https://translate.google.ru/#ru/en/" + Uri.EscapeDataString(query));
                         break;
 
-                    case "-3":
+                    case "-2":
                         Process.Start("https://translate.google.ru/#en/ru/" + Uri.EscapeDataString(query));
                         break;
 
-                    case "-4":
+                    case "-3":
                         System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", query + "\n@pause");
                         Process.Start(Application.StartupPath + "\\run.bat");
                         break;
@@ -144,36 +190,40 @@ namespace TizTaboo
                     default:
                         {
                             faNote note = Data.NoteList.GetNodeByAlias(alias);
-                            switch (note.Type)
+                            if (note != null)
                             {
-                                case faType.None:
-                                    break;
+                                switch (note.Type)
+                                {
+                                    case faType.None:
+                                        break;
 
-                                case faType.URL:
-                                case faType.Windows:
-                                    Process.Start(note.Command, note.Param);
-                                    break;
+                                    case faType.URL:
+                                    case faType.Windows:
+                                        Process.Start(note.Command, note.Param);
+                                        break;
 
-                                case faType.Batch:
-                                    System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", note.Command);
-                                    Process.Start(Application.StartupPath + "\\run.bat");
-                                    break;
+                                    case faType.Batch:
+                                        System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", note.Command);
+                                        Process.Start(Application.StartupPath + "\\run.bat");
+                                        break;
 
-                                case faType.MultiAlias:
-                                    string[] cmd = note.Command.Split(';');
-                                    foreach (string item in cmd)
-                                    {
-                                        faNote n = Data.NoteList.GetNodeByAlias(item);
-                                        if (n != null)
-                                            Process.Start(n.Command, n.Param);
-                                    }
-                                    break;
+                                    case faType.MultiAlias:
+                                        string[] cmd = note.Command.Split(';');
+                                        foreach (string item in cmd)
+                                        {
+                                            faNote n = Data.NoteList.GetNodeByAlias(item);
+                                            if (n != null)
+                                                Process.Start(n.Command, n.Param);
+                                        }
+                                        break;
 
-                                default:
-                                    break;
+                                    default:
+                                        break;
+                                }
+                                note.LastExec = DateTime.Now;
+                                note.RunCount = note.RunCount > 9999 ? 0 : note.RunCount + 1;
                             }
-                            note.LastExec = DateTime.Now;
-                            note.RunCount = note.RunCount > 9999 ? 0 : note.RunCount + 1;
+                            else Process.Start("https://www.google.ru/search?q=" + Uri.EscapeDataString(query));
                         }
                         break;
                 }
@@ -239,10 +289,57 @@ namespace TizTaboo
                         }
                     }
 
-                    string[] id = { "-1", "-2", "-3", "-4" };
-                    string[] txt = {
-                                       ">>> Искать «" + tbAlias.Text + "» в Гугле",
-                                       ">>> Перевести «" + tbAlias.Text + "» на английский" ,
+                    if (q.Length > 2)
+                    {
+                        string[] gr = GoogleSeek(q);
+                        if (gr != null && gr.Length > 0)
+                        {
+                            int k = 0;
+                            foreach (string query in gr)
+                            {
+                                k++;
+                                string note = query.Replace("\"", "").Replace("\\u003d", "=");
+                                Panel panel = new Panel();
+                                panel.Name = "subpanel_" + i;
+                                panel.Location = new Point(0, (i * 24) + 4 + 10);
+                                panel.Size = new Size(this.Width, 20);
+                                panel.BorderStyle = BorderStyle.None;
+                                panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.DodgerBlue;
+                                panel.BackColor = (i == 0) ? System.Drawing.Color.DodgerBlue : System.Drawing.Color.Black;
+                                panel.Parent = pnl;
+                                panel.Tag = note;
+
+                                Label lbl = new Label();
+                                lbl.Parent = panel;
+                                lbl.Name = "label_" + i;
+                                lbl.AutoSize = true;
+                                lbl.Location = new Point(8, 2);
+                                lbl.Text = note;
+                                lbl.Font = new Font(lbl.Font.FontFamily, 12);
+
+                                lbl.Visible = true;
+
+                                Label lbl2 = new Label();
+                                lbl2.Parent = panel;
+                                lbl2.Name = "label2_" + i;
+                                lbl2.AutoSize = true;
+                                lbl2.Location = new Point(lbl.Width + 4, 2);
+                                lbl2.Text = " (google)";
+                                lbl2.ForeColor = Color.Gray;
+                                //lbl2.Font = new Font(lbl.Font, FontStyle.Bold);
+                                lbl2.Visible = true;
+
+                                panel.Controls.Add(lbl);
+                                pnl.Controls.Add(panel);
+                                i++;
+                                if (k == 5)
+                                    break;
+                            }
+                        }
+                    }
+
+                    string[] id = { "-1", "-2", "-3" };
+                    string[] txt = {                                       ">>> Перевести «" + tbAlias.Text + "» на английский" ,
                                        ">>> Перевести «" + tbAlias.Text + "» на русский",
                                        ">>> Выполнить «" + tbAlias.Text + "» "};
 
@@ -250,7 +347,7 @@ namespace TizTaboo
                     {
                         Panel panel = new Panel();
                         panel.Name = "subpanel_" + i;
-                        panel.Location = new Point(0, (i * 24) + 4);
+                        panel.Location = new Point(0, (i * 24) + 4 + 20);
                         panel.Size = new Size(this.Width, 20);
                         panel.BorderStyle = BorderStyle.None;
                         panel.ForeColor = (i == 0) ? System.Drawing.Color.Black : System.Drawing.Color.LawnGreen;
@@ -287,7 +384,7 @@ namespace TizTaboo
             this.Focus();
             tbAlias.Focus();
 
-            for (int y = 0; y < 100; y++)
+            for (int y = 0; y < 100; y = y + 2)
             {
                 if (this.Location.Y + y > 0)
                 {
@@ -295,9 +392,10 @@ namespace TizTaboo
                     break;
                 }
                 this.Location = new Point(0, this.Location.Y + y);
-                Thread.Sleep(7);
+                Thread.Sleep(1);
             }
         }
+
         private void tbAlias_KeyDown(object sender, KeyEventArgs e)
         {
             // Color cl1 = System.Drawing.Color.Black;
@@ -328,6 +426,15 @@ namespace TizTaboo
                 this.HideForm();
                 Run(pnl.Controls["subpanel_" + si].Tag.ToString(), tbAlias.Text.Trim());
             }
+            else if (e.KeyCode == Keys.Tab && i > 0)
+            {
+                if (pnl.Controls["subpanel_" + si] != null)
+                {
+                    tbAlias.Text = pnl.Controls["subpanel_" + si].Tag.ToString() + " ";
+                    tbAlias.SelectionStart = tbAlias.Text.Length - 1;
+                    tbAlias.SelectionLength = 0;
+                }
+            }
             else if (e.KeyCode == Keys.Escape)
                 this.HideForm();
         }
@@ -353,5 +460,8 @@ namespace TizTaboo
 
         #endregion Private Methods
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+        }
     }
 }
