@@ -16,6 +16,7 @@ namespace TizTaboo
 
         public int _height;
         public int _width;
+        private int _delay = 0;
 
         #endregion Public Fields
 
@@ -85,6 +86,7 @@ namespace TizTaboo
             {
                 HttpWebRequest request = (HttpWebRequest)WebRequest.Create("http://google.ru/complete/search?output=firefox&client=firefox&hl=ru&q=" + Uri.EscapeDataString(q));
                 request.Proxy.Credentials = CredentialCache.DefaultCredentials;
+                request.Timeout = 1000;
                 HttpWebResponse response = (HttpWebResponse)request.GetResponse();
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -114,14 +116,11 @@ namespace TizTaboo
                 }
                 else if (response.StatusCode == HttpStatusCode.NotFound)
                 {
-                    Console.WriteLine("Такой страницы нет.");
                 }
                 response.Close();
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.Message);
-                throw;
             }
 
             return ret;
@@ -173,16 +172,19 @@ namespace TizTaboo
             {
                 switch (alias)
                 {
-                   
                     case "-1":
-                        Process.Start("https://translate.google.ru/#ru/en/" + Uri.EscapeDataString(query));
+                        Process.Start("https://www.google.ru/search?q=" + Uri.EscapeDataString(query));
                         break;
 
                     case "-2":
-                        Process.Start("https://translate.google.ru/#en/ru/" + Uri.EscapeDataString(query));
+                        Process.Start("https://translate.google.ru/#ru/en/" + Uri.EscapeDataString(query));
                         break;
 
                     case "-3":
+                        Process.Start("https://translate.google.ru/#en/ru/" + Uri.EscapeDataString(query));
+                        break;
+
+                    case "-4":
                         System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", query + "\n@pause");
                         Process.Start(Application.StartupPath + "\\run.bat");
                         break;
@@ -223,7 +225,7 @@ namespace TizTaboo
                                 note.LastExec = DateTime.Now;
                                 note.RunCount = note.RunCount > 9999 ? 0 : note.RunCount + 1;
                             }
-                            else Process.Start("https://www.google.ru/search?q=" + Uri.EscapeDataString(query));
+                            else Process.Start("https://www.google.ru/search?q=" + Uri.EscapeDataString(alias));
                         }
                         break;
                 }
@@ -338,10 +340,12 @@ namespace TizTaboo
                         }
                     }
 
-                    string[] id = { "-1", "-2", "-3" };
-                    string[] txt = {                                       ">>> Перевести «" + tbAlias.Text + "» на английский" ,
-                                       ">>> Перевести «" + tbAlias.Text + "» на русский",
-                                       ">>> Выполнить «" + tbAlias.Text + "» "};
+                    string[] id = { "-1", "-2", "-3", "-4" };
+                    string[] txt = {
+                                       "Искать «" + tbAlias.Text + "» в Гугле",
+                                       "Перевести «" + tbAlias.Text + "» на английский" ,
+                                       "Перевести «" + tbAlias.Text + "» на русский",
+                                       "Выполнить «" + tbAlias.Text + "» "};
 
                     for (int ind = 0; ind < id.Length; ind++)
                     {
@@ -455,7 +459,9 @@ namespace TizTaboo
                 this.ShowForm();
             }
             else
+            {
                 Seek(tbAlias.Text);
+            }
         }
 
         #endregion Private Methods
