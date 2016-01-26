@@ -16,7 +16,7 @@ namespace TizTaboo
 
         public int _height;
         public int _width;
-        private int _delay = 0;
+        private DateTime lastSaveTime = DateTime.Now;
 
         #endregion Public Fields
 
@@ -154,7 +154,7 @@ namespace TizTaboo
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Data.NoteList.Save();
+            //Data.NoteList.Save();
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -224,6 +224,12 @@ namespace TizTaboo
                                 }
                                 note.LastExec = DateTime.Now;
                                 note.RunCount = note.RunCount > 9999 ? 0 : note.RunCount + 1;
+
+                                if ((DateTime.Now - lastSaveTime).Hours > 6) 
+                                {
+                                    Data.NoteList.Save();
+                                    lastSaveTime = DateTime.Now;
+                                }
                             }
                             else Process.Start("https://www.google.ru/search?q=" + Uri.EscapeDataString(alias));
                         }

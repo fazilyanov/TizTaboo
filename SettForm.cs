@@ -26,12 +26,14 @@ namespace TizTaboo
 
         private void btnDel_Click(object sender, EventArgs e)
         {
-            if (!addmode && MessageBox.Show("Удалить запись " + curname + "(" + curalias + ")" + "?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (!addmode && MessageBox.Show("Удалить записи?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                if (Data.NoteList.DeleteNodeByAlias(tbAlias.Text)) LoadData();
-                else MessageBox.Show("Не удалось удалить запись!");
+                foreach (DataGridViewRow item in dgvAll.SelectedRows)
+                {
+                    Data.NoteList.DeleteNodeByAlias(item.Cells[1].Value.ToString());
+                }
+                LoadData();
             }
-            dgvAll.ClearSelection();
         }
 
         private void btnNew_Click(object sender, EventArgs e)
