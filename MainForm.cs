@@ -13,6 +13,7 @@ namespace TizTaboo
     {
         public int _height;
         public int _width;
+        private DateTime lastSaveTime = DateTime.Now;
 
         private readonly HotKeyManager _hotKeyManager;
 
@@ -141,6 +142,11 @@ namespace TizTaboo
                     }
                     note.LastExec = DateTime.Now;
                     note.RunCount = note.RunCount > 9999 ? 0 : note.RunCount + 1;
+                    if ((DateTime.Now - lastSaveTime).Hours > 6)
+                    {
+                        Data.NoteList.Save();
+                        lastSaveTime = DateTime.Now;
+                    }
                 }
             }
             catch (Exception ex)
