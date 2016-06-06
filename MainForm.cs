@@ -16,6 +16,7 @@ namespace TizTaboo
         private DateTime lastSaveTime = DateTime.Now;
 
         private readonly HotKeyManager _hotKeyManager;
+        private bool _altF4Pressed;
 
         private string _basepath = "";
         private int i = 0;
@@ -92,8 +93,13 @@ namespace TizTaboo
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            //Data.NoteList.Save();
-            e.Cancel = true;
+            if (_altF4Pressed)
+            {
+                if (e.CloseReason == CloseReason.UserClosing)
+                    e.Cancel = true;
+                _altF4Pressed = false;
+            }
+
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -309,6 +315,12 @@ namespace TizTaboo
             {
                 Seek(tbAlias.Text);
             }
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Alt && e.KeyCode == Keys.F4)
+                _altF4Pressed = true;
         }
     }
 }

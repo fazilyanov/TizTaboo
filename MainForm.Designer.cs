@@ -35,7 +35,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnl.ForeColor = System.Drawing.Color.White;
             this.pnl.Location = new System.Drawing.Point(0, 15);
-            this.pnl.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.pnl.Margin = new System.Windows.Forms.Padding(2);
             this.pnl.Name = "pnl";
             this.pnl.Size = new System.Drawing.Size(766, 444);
             this.pnl.TabIndex = 2;
@@ -47,7 +47,7 @@
             this.tbAlias.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tbAlias.ForeColor = System.Drawing.Color.White;
             this.tbAlias.Location = new System.Drawing.Point(19, 2);
-            this.tbAlias.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.tbAlias.Margin = new System.Windows.Forms.Padding(2);
             this.tbAlias.Name = "tbAlias";
             this.tbAlias.Size = new System.Drawing.Size(862, 16);
             this.tbAlias.TabIndex = 1;
@@ -80,7 +80,8 @@
             this.ForeColor = System.Drawing.Color.White;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.KeyPreview = true;
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainForm";
             this.ShowInTaskbar = false;
             this.Text = "TizTaboo";
@@ -88,6 +89,7 @@
             this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
