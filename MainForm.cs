@@ -93,6 +93,7 @@ namespace TizTaboo
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             //Data.NoteList.Save();
+            e.Cancel = true;
         }
 
         private void MainForm_Load(object sender, EventArgs e)
@@ -119,8 +120,6 @@ namespace TizTaboo
 
                     switch (note.Type)
                     {
-                        
-
                         case faType.Ссылка:
                             Process.Start(note.Command, note.Param);
                             break;
@@ -136,7 +135,11 @@ namespace TizTaboo
                             {
                                 faNote n = Data.NoteList.GetNodeByAlias(item);
                                 if (n != null)
+                                {
                                     Process.Start(n.Command, n.Param);
+                                    note.LastExec = DateTime.Now;
+                                    note.RunCount = note.RunCount > 99999 ? 0 : note.RunCount + 1;
+                                }
                             }
                             break;
 
@@ -144,8 +147,8 @@ namespace TizTaboo
                             break;
                     }
                     note.LastExec = DateTime.Now;
-                    note.RunCount = note.RunCount > 9999 ? 0 : note.RunCount + 1;
-                    if ((DateTime.Now - lastSaveTime).Hours > 6)
+                    note.RunCount = note.RunCount > 99999 ? 0 : note.RunCount + 1;
+                    if ((DateTime.Now - lastSaveTime).Hours > 3)
                     {
                         Data.NoteList.Save();
                         lastSaveTime = DateTime.Now;
@@ -188,7 +191,7 @@ namespace TizTaboo
                         lbl.Parent = panel;
                         lbl.Name = "label_" + i;
                         lbl.AutoSize = true;
-                        lbl.Location = new Point(20, 2);
+                        lbl.Location = new Point(20, 4);
                         lbl.Text = "• " + note.Name;
                         lbl.Font = new Font(lbl.Font.FontFamily, 10);
 
@@ -200,7 +203,7 @@ namespace TizTaboo
                             lbl2.Parent = panel;
                             lbl2.Name = "label2_" + i;
                             lbl2.AutoSize = true;
-                            lbl2.Location = new Point(lbl.Width + 16, 2);
+                            lbl2.Location = new Point(lbl.Width + 16, 4);
                             lbl2.Text = " (" + note.Alias + ")";
                             lbl2.ForeColor = Color.Gray;
                             lbl2.Visible = true;
@@ -286,13 +289,21 @@ namespace TizTaboo
 
         private void tbAlias_TextChanged(object sender, EventArgs e)
         {
-            if (tbAlias.Text.Trim().Contains("`") || tbAlias.Text.Trim().Contains("ё"))
+            string text = tbAlias.Text.Trim().ToLower();
+            if (text.Contains("`") || text.Contains("ё"))
             {
                 HideForm();
                 SettForm newForm = new SettForm();
                 tbAlias.Clear();
                 newForm.ShowDialog();
                 this.ShowForm();
+            }
+            else if (text == "exit" || text == "учше")
+            {
+                if (MessageBox.Show("Закрыть TizTaboo?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    Environment.Exit(0);
+                }
             }
             else
             {
