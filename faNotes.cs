@@ -7,11 +7,11 @@ namespace TizTaboo
 {
     internal enum faType
     {
-        None = 0,
-        URL = 1,
-        Windows = 2,
-        MultiAlias = 3,
-        Batch = 4
+        Ссылка = 1,
+        Мульти = 2,
+        Консоль = 3,
+        None = 4
+#warning    убрать 4
     }
 
     [Serializable]
@@ -24,14 +24,17 @@ namespace TizTaboo
         public string Param;
         public int RunCount = 0;
         public faType Type;
+        public bool Confirm = false;
 
-        public faNote(string Name, string Alias, string Command, string Param, faType Type)
+        public faNote(string Name, string Alias, string Command, string Param, faType Type, bool Confirm, int RunCount)
         {
             this.Name = Name;
             this.Alias = Alias;
             this.Command = Command;
             this.Param = Param;
             this.Type = Type;
+            this.Confirm = Confirm;
+            this.RunCount = RunCount;
             this.LastExec = DateTime.Now;
         }
     }

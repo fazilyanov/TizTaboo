@@ -5,24 +5,14 @@ namespace TizTaboo
 {
     public partial class SettForm : Form
     {
-        #region Private Fields
-
         private bool addmode = true;
         private string curalias = "";
         private string curname = "";
-
-        #endregion Private Fields
-
-        #region Public Constructors
 
         public SettForm()
         {
             InitializeComponent();
         }
-
-        #endregion Public Constructors
-
-        #region Private Methods
 
         private void btnDel_Click(object sender, EventArgs e)
         {
@@ -52,6 +42,11 @@ namespace TizTaboo
 
             tbParam.ReadOnly = false;
             tbParam.Text = "";
+
+            chkbConfirm.Checked = false;
+
+            tbRunCount.ReadOnly = false;
+            tbRunCount.Text = "0";
 
             dgvAll.ClearSelection();
             btnSave.Text = "Добавить";
@@ -83,18 +78,16 @@ namespace TizTaboo
                 return;
             }
 
-            faType type = faType.None; ;
-            Enum.TryParse<faType>(cbType.SelectedValue.ToString(), out type);
+            //
+            int intRunCount = 0;
+            int.TryParse(tbRunCount.Text.Trim(), out intRunCount);
 
-            if (type == faType.None)
-            {
-                MessageBox.Show("Не выбран тип", "Ошибка");
-                return;
-            }
+            faType type = faType.Ссылка;
+            Enum.TryParse<faType>(cbType.SelectedValue.ToString(), out type);
 
             if (addmode)
                 if (Data.NoteList.GetNodeByAlias(tbAlias.Text) == null)
-                    Data.NoteList.Add(new faNote(tbName.Text, tbAlias.Text, tbCommand.Text, tbParam.Text, type));
+                    Data.NoteList.Add(new faNote(tbName.Text, tbAlias.Text, tbCommand.Text, tbParam.Text, type, chkbConfirm.Checked, intRunCount));
                 else
                 {
                     MessageBox.Show("C алиасом '" + tbAlias.Text + "' уже есть запись", "Ошибка");
@@ -114,11 +107,13 @@ namespace TizTaboo
                 note.Command = tbCommand.Text;
                 note.Param = tbParam.Text;
                 note.Type = type;
+                note.Confirm = chkbConfirm.Checked;
+                note.RunCount = intRunCount;
             }
 
             Data.NoteList.Save();
             LoadData();
-            btnNew_Click(null, null);
+            //btnNew_Click(null, null);
         }
 
         private void dgvAll_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
@@ -127,9 +122,9 @@ namespace TizTaboo
             {
                 if (e.RowIndex > -1)
                 {
-                    faType type = faType.None; ;
+                    faType type = faType.Ссылка;
                     Enum.TryParse<faType>(dgvAll.Rows[e.RowIndex].Cells["type"].Value.ToString(), out type);
-                    cbType.SelectedIndex = (int)type;
+                    cbType.SelectedIndex = (int)type - 1;
                     cbType.Enabled = true;
 
                     tbName.ReadOnly = false;
@@ -144,6 +139,11 @@ namespace TizTaboo
                     tbParam.ReadOnly = false;
                     tbParam.Text = dgvAll.Rows[e.RowIndex].Cells["param"].Value.ToString();
 
+                    tbRunCount.ReadOnly = false;
+                    tbRunCount.Text = dgvAll.Rows[e.RowIndex].Cells["count"].Value.ToString();
+
+                    chkbConfirm.Checked = dgvAll.Rows[e.RowIndex].Cells["confirm"].Value.ToString() == "Да" ? true : false;
+
                     btnSave.Text = "Сохранить";
                     addmode = false;
                 }
@@ -156,10 +156,26 @@ namespace TizTaboo
 
         private void LoadData()
         {
+            int saveRow = 0;
+            int selectedRowIndex = 0;
+            if (dgvAll.Rows.Count > 0)
+            {
+                selectedRowIndex = dgvAll.CurrentCell.RowIndex;
+                saveRow = dgvAll.FirstDisplayedCell.RowIndex;
+            }
             dgvAll.Rows.Clear();
             Data.NoteList.Items.Sort((a, b) => a.Name.CompareTo(b.Alias));
             foreach (faNote note in Data.NoteList.Items)
-                dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(), note.RunCount.ToString());
+                dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(), note.RunCount.ToString(), note.Confirm ? "Да" : "Нет");
+            dgvAll.Sort(dgvAll.Columns["alias"], System.ComponentModel.ListSortDirection.Ascending);
+
+            dgvAll.ClearSelection();
+
+            if (saveRow != 0 && saveRow < dgvAll.Rows.Count)
+            {
+                dgvAll.FirstDisplayedScrollingRowIndex = saveRow;
+                dgvAll.Rows[selectedRowIndex].Selected = true;
+            }
         }
 
         private void SettForm_Load(object sender, EventArgs e)
@@ -171,6 +187,7 @@ namespace TizTaboo
             dgvAll.Columns.Add("param", "Параметр");
             dgvAll.Columns.Add("when", "Последний запуск");
             dgvAll.Columns.Add("count", "Запускалось");
+            dgvAll.Columns.Add("confirm", "Предупреждать");
 
             dgvAll.Columns["name"].Width = 160;
             dgvAll.Columns["alias"].Width = 160;
@@ -179,12 +196,12 @@ namespace TizTaboo
             dgvAll.Columns["param"].Width = 100;
             dgvAll.Columns["when"].Width = 150;
             dgvAll.Columns["count"].Width = 150;
+            dgvAll.Columns["confirm"].Width = 150;
+
             cbType.DataSource = Enum.GetValues(typeof(faType));
-            
-            LoadData();dgvAll.Sort(dgvAll.Columns["alias"], System.ComponentModel.ListSortDirection.Ascending);
+
+            LoadData();
             dgvAll.ClearSelection();
         }
-
-        #endregion Private Methods
     }
 }

@@ -54,7 +54,7 @@ namespace TizTaboo
                 if (result == DialogResult.Yes)
                 {
                     Data.NoteList = new faNotes(_basepath);
-                    Data.NoteList.Add(new faNote("Тест", "test", "https://vk.com", "", faType.URL));
+                    Data.NoteList.Add(new faNote("Тест", "test", "https://vk.com", "", faType.Ссылка, false, 0));
                     if (!Data.NoteList.Save())
                     {
                         MessageBox.Show("Ошибка создания базы!");
@@ -112,22 +112,25 @@ namespace TizTaboo
                 faNote note = Data.NoteList.GetNodeByAlias(alias);
                 if (note != null)
                 {
+                    if (note.Confirm && MessageBox.Show("Точно запустить?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.No)
+                    {
+                        return false;
+                    }
+
                     switch (note.Type)
                     {
-                        case faType.None:
-                            break;
+                        
 
-                        case faType.URL:
-                        case faType.Windows:
+                        case faType.Ссылка:
                             Process.Start(note.Command, note.Param);
                             break;
 
-                        case faType.Batch:
+                        case faType.Консоль:
                             System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", note.Command);
                             Process.Start(Application.StartupPath + "\\run.bat");
                             break;
 
-                        case faType.MultiAlias:
+                        case faType.Мульти:
                             string[] cmd = note.Command.Split(';');
                             foreach (string item in cmd)
                             {
@@ -205,7 +208,7 @@ namespace TizTaboo
                         panel.Controls.Add(lbl);
                         pnl.Controls.Add(panel);
                         i++;
-                        if (i > 15) break;
+                        if ((i * 24) + 60 > _height) break;
                     }
                 }
             }

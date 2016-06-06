@@ -37,13 +37,16 @@
             this.tbName = new System.Windows.Forms.TextBox();
             this.tbParam = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
+            this.chkbConfirm = new System.Windows.Forms.CheckBox();
+            this.tbRunCount = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dgvAll)).BeginInit();
             this.SuspendLayout();
             // 
             // label2
             // 
+            this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(317, 9);
+            this.label2.Location = new System.Drawing.Point(335, 9);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 13);
             this.label2.TabIndex = 3;
@@ -51,7 +54,8 @@
             // 
             // tbAlias
             // 
-            this.tbAlias.Location = new System.Drawing.Point(320, 26);
+            this.tbAlias.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbAlias.Location = new System.Drawing.Point(336, 26);
             this.tbAlias.Name = "tbAlias";
             this.tbAlias.ReadOnly = true;
             this.tbAlias.Size = new System.Drawing.Size(369, 20);
@@ -59,20 +63,20 @@
             // 
             // cbType
             // 
-            this.cbType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.cbType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cbType.Enabled = false;
             this.cbType.FormattingEnabled = true;
-            this.cbType.Location = new System.Drawing.Point(695, 25);
+            this.cbType.Location = new System.Drawing.Point(714, 25);
             this.cbType.Name = "cbType";
-            this.cbType.Size = new System.Drawing.Size(304, 21);
+            this.cbType.Size = new System.Drawing.Size(177, 21);
             this.cbType.TabIndex = 4;
             // 
             // label3
             // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(702, 9);
+            this.label3.Location = new System.Drawing.Point(720, 9);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(26, 13);
             this.label3.TabIndex = 5;
@@ -86,7 +90,7 @@
             this.tbCommand.Multiline = true;
             this.tbCommand.Name = "tbCommand";
             this.tbCommand.ReadOnly = true;
-            this.tbCommand.Size = new System.Drawing.Size(990, 62);
+            this.tbCommand.Size = new System.Drawing.Size(996, 62);
             this.tbCommand.TabIndex = 6;
             // 
             // dgvAll
@@ -100,14 +104,14 @@
             this.dgvAll.Location = new System.Drawing.Point(9, 151);
             this.dgvAll.Name = "dgvAll";
             this.dgvAll.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvAll.Size = new System.Drawing.Size(1141, 327);
+            this.dgvAll.Size = new System.Drawing.Size(1147, 327);
             this.dgvAll.TabIndex = 12;
             this.dgvAll.CellMouseClick += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dgvAll_CellMouseClick);
             // 
             // btnNew
             // 
             this.btnNew.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnNew.Location = new System.Drawing.Point(1007, 23);
+            this.btnNew.Location = new System.Drawing.Point(1013, 23);
             this.btnNew.Name = "btnNew";
             this.btnNew.Size = new System.Drawing.Size(143, 25);
             this.btnNew.TabIndex = 13;
@@ -118,7 +122,7 @@
             // btnDel
             // 
             this.btnDel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDel.Location = new System.Drawing.Point(1007, 54);
+            this.btnDel.Location = new System.Drawing.Point(1013, 54);
             this.btnDel.Name = "btnDel";
             this.btnDel.Size = new System.Drawing.Size(143, 25);
             this.btnDel.TabIndex = 14;
@@ -129,7 +133,7 @@
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.Location = new System.Drawing.Point(1007, 85);
+            this.btnSave.Location = new System.Drawing.Point(1013, 85);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(143, 60);
             this.btnSave.TabIndex = 15;
@@ -148,10 +152,12 @@
             // 
             // tbName
             // 
+            this.tbName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tbName.Location = new System.Drawing.Point(9, 26);
             this.tbName.Name = "tbName";
             this.tbName.ReadOnly = true;
-            this.tbName.Size = new System.Drawing.Size(305, 20);
+            this.tbName.Size = new System.Drawing.Size(320, 20);
             this.tbName.TabIndex = 16;
             // 
             // tbParam
@@ -161,7 +167,7 @@
             this.tbParam.Location = new System.Drawing.Point(70, 125);
             this.tbParam.Name = "tbParam";
             this.tbParam.ReadOnly = true;
-            this.tbParam.Size = new System.Drawing.Size(929, 20);
+            this.tbParam.Size = new System.Drawing.Size(821, 20);
             this.tbParam.TabIndex = 18;
             // 
             // label4
@@ -173,11 +179,33 @@
             this.label4.TabIndex = 19;
             this.label4.Text = "Параметр";
             // 
+            // chkbConfirm
+            // 
+            this.chkbConfirm.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.chkbConfirm.AutoSize = true;
+            this.chkbConfirm.Location = new System.Drawing.Point(898, 27);
+            this.chkbConfirm.Name = "chkbConfirm";
+            this.chkbConfirm.Size = new System.Drawing.Size(109, 17);
+            this.chkbConfirm.TabIndex = 20;
+            this.chkbConfirm.Text = "Предупреждать ";
+            this.chkbConfirm.UseVisualStyleBackColor = true;
+            // 
+            // tbRunCount
+            // 
+            this.tbRunCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbRunCount.Location = new System.Drawing.Point(898, 124);
+            this.tbRunCount.Name = "tbRunCount";
+            this.tbRunCount.ReadOnly = true;
+            this.tbRunCount.Size = new System.Drawing.Size(107, 20);
+            this.tbRunCount.TabIndex = 21;
+            // 
             // SettForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1160, 488);
+            this.ClientSize = new System.Drawing.Size(1166, 488);
+            this.Controls.Add(this.tbRunCount);
+            this.Controls.Add(this.chkbConfirm);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.tbParam);
             this.Controls.Add(this.label1);
@@ -195,6 +223,7 @@
             this.Name = "SettForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Алиасы";
+            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.SettForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dgvAll)).EndInit();
             this.ResumeLayout(false);
@@ -217,5 +246,7 @@
         private System.Windows.Forms.TextBox tbName;
         private System.Windows.Forms.TextBox tbParam;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox chkbConfirm;
+        private System.Windows.Forms.TextBox tbRunCount;
     }
 }
