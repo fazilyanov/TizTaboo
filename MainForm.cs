@@ -143,8 +143,8 @@ namespace TizTaboo
                                 if (n != null)
                                 {
                                     Process.Start(n.Command, n.Param);
-                                    note.LastExec = DateTime.Now;
-                                    note.RunCount = note.RunCount > 99999 ? 0 : note.RunCount + 1;
+                                    n.LastExec = DateTime.Now;
+                                    n.RunCount = n.RunCount > 99999 ? 0 : n.RunCount + 1;
                                 }
                             }
                             break;
