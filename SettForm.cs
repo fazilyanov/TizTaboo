@@ -203,5 +203,11 @@ namespace TizTaboo
             LoadData();
             dgvAll.ClearSelection();
         }
+
+        private void tbName_Leave(object sender, EventArgs e)
+        {
+            if (tbAlias.Text.Trim().Length == 0)
+                tbAlias.Text = tbName.Text;
+        }
     }
 }

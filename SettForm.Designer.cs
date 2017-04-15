@@ -159,6 +159,7 @@
             this.tbName.ReadOnly = true;
             this.tbName.Size = new System.Drawing.Size(320, 20);
             this.tbName.TabIndex = 16;
+            this.tbName.Leave += new System.EventHandler(this.tbName_Leave);
             // 
             // tbParam
             // 

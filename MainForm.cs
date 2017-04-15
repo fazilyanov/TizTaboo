@@ -13,6 +13,9 @@ namespace TizTaboo
     {
         public int _height;
         public int _width;
+        public int _topx;
+        public int _topy;
+
         private DateTime lastSaveTime = DateTime.Now;
 
         private readonly HotKeyManager _hotKeyManager;
@@ -65,30 +68,53 @@ namespace TizTaboo
             }
         }
 
+        private void ShowForm()
+        {
+            Show();
+            Activate();
+            Focus();
+            tbAlias.Focus();
+            Seek("");
+
+            //for (int y = 0; y < 100; y = y + 2)
+            //{
+            //    if (this.Location.Y + y > 0)
+            //    {
+            //        this.Location = new Point(0, 0);
+            //        break;
+            //    }
+            //    this.Location = new Point(0, Location.Y + y);
+            //    Thread.Sleep(1);
+            //}
+
+            Location = new Point(_topx, _topy);
+        }
+
         private void HideForm()
         {
-            for (int y = 0; y < 100; y++)
-            {
-                if (this.Location.Y - y < -_height)
-                {
-                    this.Location = new Point(0, -_height);
-                    break;
-                }
-                this.Location = new Point(0, this.Location.Y - y);
-                Thread.Sleep(1);
-            }
+            //for (int y = 0; y < 100; y++)
+            //{
+            //    if (Location.Y - y < -_height)
+            //    {
+            //        Location = new Point(0, -_height);
+            //        break;
+            //    }
+            //    Location = new Point(0, this.Location.Y - y);
+            //    Thread.Sleep(1);
+            //}
+            Location = new Point(0, -_height);
         }
 
         private void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
         {
             tbAlias.Clear();
-            this.ShowForm();
-            this.TopLevel = true;
+            ShowForm();
+            TopLevel = true;
         }
 
         private void MainForm_Deactivate(object sender, EventArgs e)
         {
-            this.HideForm();
+            HideForm();
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -104,11 +130,19 @@ namespace TizTaboo
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            _height = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height / 2;
-            _width = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width / 4;
-            this.BackColor = tbAlias.BackColor = Color.FromArgb(1, 36, 86);
-            this.Size = new Size(_width, _height);
-            this.Location = new Point(0, -_height);
+            _height = Screen.PrimaryScreen.Bounds.Height / 3;
+            _width = Screen.PrimaryScreen.Bounds.Width / 4;
+            _topx = Screen.PrimaryScreen.Bounds.Width / 2 - _width / 2;
+            _topy = _height;
+            BackColor = tbAlias.BackColor = Color.FromArgb(1, 36, 86);
+            Size = new Size(_width, _height);
+            Location = new Point(0, -_height);
+        }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Alt && e.KeyCode == Keys.F4)
+                _altF4Pressed = true;
         }
 
         private bool Run(string alias, string query)
@@ -131,7 +165,7 @@ namespace TizTaboo
                             break;
 
                         case faType.Консоль:
-                            System.IO.File.WriteAllText(Application.StartupPath + "\\run.bat", note.Command);
+                            File.WriteAllText(Application.StartupPath + "\\run.bat", note.Command);
                             Process.Start(Application.StartupPath + "\\run.bat");
                             break;
 
@@ -174,13 +208,12 @@ namespace TizTaboo
             try
             {
                 q = q.Trim();
-                pnl.Controls.Clear();
-
                 List<faNote> result = Data.NoteList.Seek(q);
                 i = 0;
                 si = 0;
                 if (result.Count > 0)
                 {
+                    pnl.Controls.Clear();
                     foreach (faNote note in result)
                     {
                         Panel panel = new Panel();
@@ -226,27 +259,6 @@ namespace TizTaboo
                 MessageBox.Show(ex.Message);
             }
         }
-
-        private void ShowForm()
-        {
-            this.Show();
-            this.Activate();
-            this.Focus();
-            tbAlias.Focus();
-            Seek("");
-
-            for (int y = 0; y < 100; y = y + 2)
-            {
-                if (this.Location.Y + y > 0)
-                {
-                    this.Location = new Point(0, 0);
-                    break;
-                }
-                this.Location = new Point(0, this.Location.Y + y);
-                Thread.Sleep(1);
-            }
-        }
-
         private void tbAlias_KeyDown(object sender, KeyEventArgs e)
         {
             Color clr;
@@ -285,12 +297,12 @@ namespace TizTaboo
                 }
             }
             else if (e.KeyCode == Keys.Escape)
-                this.HideForm();
+                HideForm();
         }
 
         private void tbAlias_Leave(object sender, EventArgs e)
         {
-            this.HideForm();
+            HideForm();
         }
 
         private void tbAlias_TextChanged(object sender, EventArgs e)
@@ -302,7 +314,7 @@ namespace TizTaboo
                 SettForm newForm = new SettForm();
                 tbAlias.Clear();
                 newForm.ShowDialog();
-                this.ShowForm();
+                ShowForm();
             }
             else if (text == "exit" || text == "учше")
             {
@@ -315,12 +327,6 @@ namespace TizTaboo
             {
                 Seek(tbAlias.Text);
             }
-        }
-
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Alt && e.KeyCode == Keys.F4)
-                _altF4Pressed = true;
         }
     }
 }

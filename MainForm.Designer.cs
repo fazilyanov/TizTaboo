@@ -34,10 +34,10 @@
             this.pnl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnl.ForeColor = System.Drawing.Color.White;
-            this.pnl.Location = new System.Drawing.Point(0, 15);
+            this.pnl.Location = new System.Drawing.Point(0, 11);
             this.pnl.Margin = new System.Windows.Forms.Padding(2);
             this.pnl.Name = "pnl";
-            this.pnl.Size = new System.Drawing.Size(766, 444);
+            this.pnl.Size = new System.Drawing.Size(766, 448);
             this.pnl.TabIndex = 2;
             // 
             // tbAlias
@@ -46,7 +46,7 @@
             this.tbAlias.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.tbAlias.Font = new System.Drawing.Font("Lucida Console", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
             this.tbAlias.ForeColor = System.Drawing.Color.White;
-            this.tbAlias.Location = new System.Drawing.Point(19, 2);
+            this.tbAlias.Location = new System.Drawing.Point(17, 3);
             this.tbAlias.Margin = new System.Windows.Forms.Padding(2);
             this.tbAlias.Name = "tbAlias";
             this.tbAlias.Size = new System.Drawing.Size(862, 16);
@@ -60,7 +60,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(2, 1);
+            this.label1.Location = new System.Drawing.Point(2, 4);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(15, 14);
