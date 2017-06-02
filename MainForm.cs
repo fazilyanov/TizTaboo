@@ -1,4 +1,8 @@
 ﻿using GlobalHotKey;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Drive.v3;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,18 +15,33 @@ namespace TizTaboo
 {
     public partial class MainForm : Form
     {
-        public int _height;
-        public int _width;
-        public int _topx;
-        public int _topy;
+        // Координаты окна
+        public int height;
 
+        public int width;
+        public int topx;
+        public int topy;
+
+        /// <summary>
+        /// Время последней записи данных в файл
+        /// </summary>
         private DateTime lastSaveTime = DateTime.Now;
 
-        private readonly HotKeyManager _hotKeyManager;
-        private bool _altF4Pressed;
+        /// <summary>
+        ///  Регистрируем гк
+        /// </summary>
+        private readonly HotKeyManager hotKeyManager;
 
-        private string _basepath = "";
+        private bool altF4Pressed;
+
+        /// <summary>
+        /// Путь до файла с данными приложения
+        /// </summary>
+        private string dataFilePath;
+
+        //
         private int i = 0;
+
         private int si = 0;
 
         public MainForm()
@@ -30,9 +49,10 @@ namespace TizTaboo
             InitializeComponent();
             try
             {
-                _hotKeyManager = new HotKeyManager();
-                _hotKeyManager.KeyPressed += HotKeyManagerPressed;
-                _hotKeyManager.Register(System.Windows.Input.Key.X, System.Windows.Input.ModifierKeys.Alt);
+                // Подключаем горячие клавиши
+                hotKeyManager = new HotKeyManager();
+                hotKeyManager.KeyPressed += HotKeyManagerPressed;
+                hotKeyManager.Register(System.Windows.Input.Key.X, System.Windows.Input.ModifierKeys.Alt);
             }
             catch
             {
@@ -40,71 +60,40 @@ namespace TizTaboo
                 Environment.Exit(-1);
             }
 
-            _basepath = Application.StartupPath + "\\" + "data.bin";
+            dataFilePath = Application.StartupPath + "\\data";
 
-            if (File.Exists(_basepath))
+            if (File.Exists(dataFilePath))
             {
-                int _n = int.Parse((Properties.Settings.Default.lastbackup ?? "0").ToString());
-                _n = _n < 10 ? _n + 1 : 1;
-                File.Copy(_basepath, _basepath + "_" + _n.ToString(), true);
-                Properties.Settings.Default.lastbackup = _n.ToString();
-                Properties.Settings.Default.Save();
-                Data.NoteList = new faNotes(_basepath);
-                Data.NoteList.Load();
+                //int _n = int.Parse((Properties.Settings.Default.lastbackup ?? "0").ToString());
+                //_n = _n < 10 ? _n + 1 : 1;
+                //File.Copy(_basepath, _basepath + "_" + _n.ToString(), true);
+                //Properties.Settings.Default.lastbackup = _n.ToString();
+                //Properties.Settings.Default.Save();
+                Program.Links = new Links(dataFilePath);
+                Program.Links.Load();
             }
             else
             {
-                var result = MessageBox.Show("База данных не найдена, создать новую?", "TizTaboo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                var result = MessageBox.Show("Файл данных не найден, создать новый?", "TizTaboo", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes)
                 {
-                    Data.NoteList = new faNotes(_basepath);
-                    Data.NoteList.Add(new faNote("Тест", "test", "https://vk.com", "", faType.Ссылка, false, 0));
-                    if (!Data.NoteList.Save())
+                    Program.Links = new Links(dataFilePath);
+                    Program.Links.Add(new Link() { Name = "Яндекс", Alias = "ya", Command = "https://ya.ru/", Type = faType.Ссылка });
+                    if (!Program.Links.Save())
                     {
                         MessageBox.Show("Ошибка создания базы!");
                         Environment.Exit(-1);
                     }
                 }
+                else Environment.Exit(-1);
             }
         }
 
-        private void ShowForm()
-        {
-            Show();
-            Activate();
-            Focus();
-            tbAlias.Focus();
-            Seek("");
-
-            //for (int y = 0; y < 100; y = y + 2)
-            //{
-            //    if (this.Location.Y + y > 0)
-            //    {
-            //        this.Location = new Point(0, 0);
-            //        break;
-            //    }
-            //    this.Location = new Point(0, Location.Y + y);
-            //    Thread.Sleep(1);
-            //}
-
-            Location = new Point(_topx, _topy);
-        }
-
-        private void HideForm()
-        {
-            //for (int y = 0; y < 100; y++)
-            //{
-            //    if (Location.Y - y < -_height)
-            //    {
-            //        Location = new Point(0, -_height);
-            //        break;
-            //    }
-            //    Location = new Point(0, this.Location.Y - y);
-            //    Thread.Sleep(1);
-            //}
-            Location = new Point(0, -_height);
-        }
-
+        /// <summary>
+        /// При нажатии на гк для вызова окна
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void HotKeyManagerPressed(object sender, KeyPressedEventArgs e)
         {
             tbAlias.Clear();
@@ -112,68 +101,115 @@ namespace TizTaboo
             TopLevel = true;
         }
 
+        /// <summary>
+        /// Показываем форму
+        /// </summary>
+        private void ShowForm()
+        {
+            Show();
+            Activate();
+            Focus();
+            tbAlias.Focus();
+            Seek(string.Empty);
+            Location = new Point(topx, topy);
+        }
+
+        /// <summary>
+        /// Скрываем форму
+        /// </summary>
+        private void HideForm()
+        {
+            Location = new Point(0, -height);
+        }
+
+        /// <summary>
+        /// Скрывваем окно при пропадании фокуса
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_Deactivate(object sender, EventArgs e)
         {
             HideForm();
         }
 
+        /// <summary>
+        /// Не даем закрыть окно стандартными способами
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (_altF4Pressed)
+            if (altF4Pressed)
             {
                 if (e.CloseReason == CloseReason.UserClosing)
                     e.Cancel = true;
-                _altF4Pressed = false;
+                altF4Pressed = false;
             }
-
         }
 
+        /// <summary>
+        /// Загрузка формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            _height = Screen.PrimaryScreen.Bounds.Height / 3;
-            _width = Screen.PrimaryScreen.Bounds.Width / 4;
-            _topx = Screen.PrimaryScreen.Bounds.Width / 2 - _width / 2;
-            _topy = _height;
+            height = Screen.PrimaryScreen.Bounds.Height / 3;
+            width = Screen.PrimaryScreen.Bounds.Width / 4;
+            topx = Screen.PrimaryScreen.Bounds.Width / 2 - width / 2;
+            topy = height;
             BackColor = tbAlias.BackColor = Color.FromArgb(1, 36, 86);
-            Size = new Size(_width, _height);
-            Location = new Point(0, -_height);
+            Size = new Size(width, height);
+            Location = new Point(topx, topy);
+            ShowForm();
         }
 
+        /// <summary>
+        /// Отлавливаем нажатие клавиш Alt + F4
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Alt && e.KeyCode == Keys.F4)
-                _altF4Pressed = true;
+                altF4Pressed = true;
         }
 
-        private bool Run(string alias, string query)
+        /// <summary>
+        /// Запускаем ссылку
+        /// </summary>
+        /// <param name="alias">Алиас ссылки</param>
+        /// <returns></returns>
+        private bool Run(string alias)
         {
             bool ret = true;
             try
             {
-                faNote note = Data.NoteList.GetNodeByAlias(alias);
-                if (note != null)
+                // Ищем ссылку по алиасу
+                Link link = Program.Links.GetByAlias(alias);
+                if (link != null)
                 {
-                    if (note.Confirm && MessageBox.Show("Точно запустить?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.No)
+                    if (link.Confirm && MessageBox.Show("Точно запустить?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.No)
                     {
                         return false;
                     }
 
-                    switch (note.Type)
+                    switch (link.Type)
                     {
                         case faType.Ссылка:
-                            Process.Start(note.Command, note.Param);
+                            Process.Start(link.Command, link.Param);
                             break;
 
                         case faType.Консоль:
-                            File.WriteAllText(Application.StartupPath + "\\run.bat", note.Command);
+                            File.WriteAllText(Application.StartupPath + "\\run.bat", link.Command);
                             Process.Start(Application.StartupPath + "\\run.bat");
                             break;
 
                         case faType.Мульти:
-                            string[] cmd = note.Command.Split(';');
+                            string[] cmd = link.Command.Split(';');
                             foreach (string item in cmd)
                             {
-                                faNote n = Data.NoteList.GetNodeByAlias(item);
+                                Link n = Program.Links.GetByAlias(item);
                                 if (n != null)
                                 {
                                     Process.Start(n.Command, n.Param);
@@ -186,11 +222,12 @@ namespace TizTaboo
                         default:
                             break;
                     }
-                    note.LastExec = DateTime.Now;
-                    note.RunCount = note.RunCount > 99999 ? 0 : note.RunCount + 1;
+                    link.LastExec = DateTime.Now;
+                    link.RunCount = link.RunCount > 99999 ? 0 : link.RunCount + 1;
+                    // Записываем в файл не чаще, чем каждые 3 часа
                     if ((DateTime.Now - lastSaveTime).Hours > 3)
                     {
-                        Data.NoteList.Save();
+                        Program.Links.Save();
                         lastSaveTime = DateTime.Now;
                     }
                 }
@@ -198,67 +235,77 @@ namespace TizTaboo
             catch (Exception ex)
             {
                 ret = false;
-                MessageBox.Show(ex.Message);
+                Log.Error("#201706021558: " + ex.Message);
+                MessageBox.Show("Ошибка");
             }
             return ret;
         }
 
+        /// <summary>
+        /// Поиск по ссылкам
+        /// </summary>
+        /// <param name="q">Запрос</param>
         private void Seek(string q)
         {
             try
             {
                 q = q.Trim();
-                List<faNote> result = Data.NoteList.Seek(q);
+                List<Link> foundLinks = Program.Links.Seek(q);
                 i = 0;
                 si = 0;
-                if (result.Count > 0)
+                if (foundLinks.Count > 0)
                 {
+                    // Расставляем полученные элементы
                     pnl.Controls.Clear();
-                    foreach (faNote note in result)
+                    foreach (Link link in foundLinks)
                     {
                         Panel panel = new Panel();
                         panel.Name = "subpanel_" + i;
                         panel.Location = new Point(20, (i * 24) + 20);
                         panel.Size = new Size(this.Width - 40, 20);
                         panel.BorderStyle = BorderStyle.None;
-                        panel.ForeColor = (i == 0) ? Color.FromArgb(1, 36, 86) : System.Drawing.Color.White;
-                        panel.BackColor = (i == 0) ? System.Drawing.Color.White : Color.FromArgb(1, 36, 86);
+                        panel.ForeColor = (i == 0) ? Color.FromArgb(1, 36, 86) : Color.White;
+                        panel.BackColor = (i == 0) ? Color.White : Color.FromArgb(1, 36, 86);
                         panel.Parent = pnl;
-                        panel.Tag = note.Alias;
+                        panel.Tag = link.Alias;
 
                         Label lbl = new Label();
                         lbl.Parent = panel;
                         lbl.Name = "label_" + i;
                         lbl.AutoSize = true;
                         lbl.Location = new Point(20, 4);
-                        lbl.Text = "• " + note.Name;
+                        lbl.Text = "• " + link.Name;
                         lbl.Font = new Font(lbl.Font.FontFamily, 10);
 
                         lbl.Visible = true;
 
-                        if (note.Alias.ToLower() != note.Name.ToLower())
+                        if (link.Alias.ToLower() != link.Name.ToLower())
                         {
                             Label lbl2 = new Label();
                             lbl2.Parent = panel;
                             lbl2.Name = "label2_" + i;
                             lbl2.AutoSize = true;
                             lbl2.Location = new Point(lbl.Width + 16, 4);
-                            lbl2.Text = " (" + note.Alias + ")";
+                            lbl2.Text = " (" + link.Alias + ")";
                             lbl2.ForeColor = Color.Gray;
                             lbl2.Visible = true;
                         }
                         panel.Controls.Add(lbl);
                         pnl.Controls.Add(panel);
                         i++;
-                        if ((i * 24) + 60 > _height) break;
+                        if ((i * 24) + 60 > height) break;
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                Log.Error("#201706021601: " + ex.Message);
+                MessageBox.Show("Ошибка");
             }
         }
+
+       
+
         private void tbAlias_KeyDown(object sender, KeyEventArgs e)
         {
             Color clr;
@@ -284,8 +331,8 @@ namespace TizTaboo
             }
             else if (e.KeyCode == Keys.Enter && i > 0)
             {
-                this.HideForm();
-                Run(pnl.Controls["subpanel_" + si].Tag.ToString(), tbAlias.Text.Trim());
+                HideForm();
+                Run(pnl.Controls["subpanel_" + si].Tag.ToString());
             }
             else if (e.KeyCode == Keys.Tab && i > 0)
             {

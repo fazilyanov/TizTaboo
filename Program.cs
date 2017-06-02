@@ -17,10 +17,8 @@ namespace TizTaboo
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
         }
+        public static Links Links { get; set; }
     }
 
-    static class Data
-    {
-        public static faNotes NoteList { get; set; }
-    }
+    
 }

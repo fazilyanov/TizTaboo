@@ -20,7 +20,7 @@ namespace TizTaboo
             {
                 foreach (DataGridViewRow item in dgvAll.SelectedRows)
                 {
-                    Data.NoteList.DeleteNodeByAlias(item.Cells[1].Value.ToString());
+                    Program.Links.DeleteByAlias(item.Cells[1].Value.ToString());
                 }
                 LoadData();
             }
@@ -86,8 +86,17 @@ namespace TizTaboo
             Enum.TryParse<faType>(cbType.SelectedValue.ToString(), out type);
 
             if (addmode)
-                if (Data.NoteList.GetNodeByAlias(tbAlias.Text) == null)
-                    Data.NoteList.Add(new faNote(tbName.Text, tbAlias.Text, tbCommand.Text, tbParam.Text, type, chkbConfirm.Checked, intRunCount));
+                if (Program.Links.GetByAlias(tbAlias.Text) == null)
+                    Program.Links.Add(new Link()
+                    {
+                        Name = tbName.Text,
+                        Alias = tbAlias.Text,
+                        Command = tbCommand.Text,
+                        Param = tbParam.Text,
+                        Type = type,
+                        Confirm = chkbConfirm.Checked,
+                        RunCount = intRunCount
+                    });
                 else
                 {
                     MessageBox.Show("C алиасом '" + tbAlias.Text + "' уже есть запись", "Ошибка");
@@ -95,9 +104,9 @@ namespace TizTaboo
                 }
             else
             {
-                faNote note = Data.NoteList.GetNodeByAlias(curalias);
+                Link note = Program.Links.GetByAlias(curalias);
 
-                if (note.Alias.Trim() != tbAlias.Text && Data.NoteList.GetNodeByAlias(tbAlias.Text) != null)
+                if (note.Alias.Trim() != tbAlias.Text && Program.Links.GetByAlias(tbAlias.Text) != null)
                 {
                     MessageBox.Show("C алиасом '" + curalias + "' уже есть запись", "Ошибка");
                     return;
@@ -111,7 +120,7 @@ namespace TizTaboo
                 note.RunCount = intRunCount;
             }
 
-            Data.NoteList.Save();
+            Program.Links.Save();
             LoadData();
             //btnNew_Click(null, null);
         }
@@ -164,8 +173,8 @@ namespace TizTaboo
                 saveRow = dgvAll.FirstDisplayedCell.RowIndex;
             }
             dgvAll.Rows.Clear();
-            Data.NoteList.Items.Sort((a, b) => a.Name.CompareTo(b.Alias));
-            foreach (faNote note in Data.NoteList.Items)
+            Program.Links.LinkList.Sort((a, b) => a.Name.CompareTo(b.Alias));
+            foreach (Link note in Program.Links.LinkList)
                 dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(), note.RunCount.ToString(), note.Confirm ? "Да" : "Нет");
             dgvAll.Sort(dgvAll.Columns["alias"], System.ComponentModel.ListSortDirection.Ascending);
 
