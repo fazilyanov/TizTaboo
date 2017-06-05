@@ -79,7 +79,7 @@ namespace TizTaboo
                 {
                     Program.Links = new Links(dataFilePath);
                     Program.Links.Add(new Link() { Name = "Яндекс", Alias = "ya", Command = "https://ya.ru/", Type = faType.Ссылка });
-                    if (!Program.Links.Save())
+                    if (!Program.Links.Save(false))
                     {
                         MessageBox.Show("Ошибка создания базы!");
                         Environment.Exit(-1);
@@ -227,7 +227,7 @@ namespace TizTaboo
                     // Записываем в файл не чаще, чем каждые 3 часа
                     if ((DateTime.Now - lastSaveTime).Hours > 3)
                     {
-                        Program.Links.Save();
+                        Program.Links.Save(false);
                         lastSaveTime = DateTime.Now;
                     }
                 }

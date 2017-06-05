@@ -120,7 +120,7 @@ namespace TizTaboo
                 note.RunCount = intRunCount;
             }
 
-            Program.Links.Save();
+            Program.Links.Save(true);
             LoadData();
             //btnNew_Click(null, null);
         }

@@ -100,8 +100,6 @@ namespace TizTaboo
             string toLoad = null;
             try
             {
-
-
                 toLoad = File.ReadAllText(DataFilePath);
 
                 if (!string.IsNullOrEmpty(toLoad))
@@ -148,7 +146,7 @@ namespace TizTaboo
         /// <summary>
         /// Записываем данные в файл
         /// </summary>
-        public bool Save()
+        public bool Save(bool sync)
         {
             try
             {
@@ -166,7 +164,12 @@ namespace TizTaboo
                 }
 
                 File.WriteAllText(DataFilePath, toSaveText);
-                GDrive("write");
+
+                if (sync)
+                {
+                    GDrive("write");
+                }
+                
             }
             catch (Exception ex)
             {
@@ -217,40 +220,51 @@ namespace TizTaboo
                             };
                             byte[] byteArray = File.ReadAllBytes(DataFilePath);
                             MemoryStream mStream = new MemoryStream(byteArray);
-                            FilesResource.CreateMediaUpload createRequest;
-                            FilesResource.UpdateMediaUpload updateRequest;
+                            FilesResource.GetRequest getRequest = service.Files.Get(Properties.Settings.Default.gFileId);
+                            bool create = false;
+                            try
+                            {
+                                getRequest.Execute();
+                            }
+                            catch
+                            {
+                                create = true;
+                            }
 
-                            !!! Узнать существует ли файл, если есть обновить его, если нет создать!!!
-                            //    !!! FilesResource.GetRequest getRequest = service.Files.Get(Properties.Settings.Default.gFileId);
-                            //   getRequest.Execute();
-
-                            if (Properties.Settings.Default.gFileId != "0")
+                            if (create)
                             {
-                                updateRequest = service.Files.Update(body, Properties.Settings.Default.gFileId, mStream, body.MimeType);
-                            }
-                            else
-                            {
-                                request= service.Files.Create(body, mStream, body.MimeType);
-                            }
-                            if (request.Upload().Exception != null)
-                            {
-                                result = request.Upload().Exception.Message;
-                            }
-                            else
-                            {
-                                if (Properties.Settings.Default.gFileId != request.ResponseBody.Id)
+                                FilesResource.CreateMediaUpload createRequest;
+                                createRequest = service.Files.Create(body, mStream, body.MimeType);
+                                if (createRequest.Upload().Exception != null)
                                 {
-                                    Properties.Settings.Default.gFileId = request.ResponseBody.Id;
-                                    Properties.Settings.Default.Save();
+                                    result = createRequest.Upload().Exception.Message;
+                                }
+                                else
+                                {
+                                    if (Properties.Settings.Default.gFileId != createRequest.ResponseBody.Id)
+                                    {
+                                        Properties.Settings.Default.gFileId = createRequest.ResponseBody.Id;
+                                        Properties.Settings.Default.Save();
+                                    }
                                 }
                             }
+                            else
+                            {
+                                FilesResource.UpdateMediaUpload updateRequest;
+                                updateRequest = service.Files.Update(body, Properties.Settings.Default.gFileId, mStream, body.MimeType);
+                                if (updateRequest.Upload().Exception != null)
+                                {
+                                    result = updateRequest.Upload().Exception.Message;
+                                }
+                            }
+                            
                             break;
-
+!!! Считать, первой строкой дата последнего редактирования
                         case "read":
-                            FilesResource.GetRequest getRequest = service.Files.Get(Properties.Settings.Default.gFileId);
-                            getRequest.Execute();
-                            FileStream fsDownload = new FileStream("aa", FileMode.Open, FileAccess.Write);
-                            getRequest.Download(fsDownload);
+                            //FilesResource.GetRequest getRequest = service.Files.Get(Properties.Settings.Default.gFileId);
+                            //getRequest.Execute();
+                            //FileStream fsDownload = new FileStream("aa", FileMode.Open, FileAccess.Write);
+                            //getRequest.Download(fsDownload);
                             break;
 
                         default:
