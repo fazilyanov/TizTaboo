@@ -100,6 +100,18 @@ namespace TizTaboo
             string toLoad = null;
             try
             {
+                // Скачаем файл с облака
+                if (Properties.Settings.Default.IsSync)
+                {
+                    Drive drive = new Drive()
+                    {
+                        fileId = Properties.Settings.Default.gFileId,
+                        folderId = Properties.Settings.Default.gFolderId
+                    };
+                    
+                }
+
+
                 toLoad = File.ReadAllText(DataFilePath);
 
                 if (!string.IsNullOrEmpty(toLoad))
@@ -150,7 +162,7 @@ namespace TizTaboo
         {
             try
             {
-                string toSaveText = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss") + "*#*\n";
+                string toSaveText = LastEditDateTime.ToString("dd.MM.yyyy HH:mm:ss") + "*#*\n";
                 foreach (Link item in LinkList)
                 {
                     toSaveText += item.Alias + "*|*";
@@ -167,9 +179,19 @@ namespace TizTaboo
 
                 if (sync)
                 {
-                    GDrive("write");
+                    Drive drive = new Drive()
+                    {
+                        fileId = Properties.Settings.Default.gFileId,
+                        folderId = Properties.Settings.Default.gFolderId
+                    };
+
+                    if (drive.UploadFile(DataFilePath))
+                    {
+                        Properties.Settings.Default.gFileId = drive.fileId;
+                        Properties.Settings.Default.gFolderId = drive.folderId;
+                        Properties.Settings.Default.Save();
+                    }
                 }
-                
             }
             catch (Exception ex)
             {
@@ -179,114 +201,6 @@ namespace TizTaboo
             return true;
         }
 
-        private string GDrive(string act)
-        {
-            string result = string.Empty;
-            string[] Scopes = { DriveService.Scope.Drive };
-            try
-            {
-                FileStream fs = new FileStream("client_id.json", FileMode.Open, FileAccess.Read);
-                using (FileStream stream = new FileStream("client_id.json", FileMode.Open, FileAccess.Read))
-                {
-                    string credPath = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-
-                    credPath = Path.Combine(credPath, ".credentials/drive-dotnet-quickstart.json");
-
-                    UserCredential credential =
-                        GoogleWebAuthorizationBroker.AuthorizeAsync(
-                            GoogleClientSecrets.Load(stream).Secrets,
-                            Scopes, GoogleClientSecrets.Load(fs).Secrets.ClientId,
-                            CancellationToken.None,
-                            new FileDataStore(credPath, true)
-                        ).Result;
-
-                    var service = new DriveService(
-                        new BaseClientService.Initializer()
-                        {
-                            HttpClientInitializer = credential,
-                            ApplicationName = "TizTaboo",
-                        }
-                    );
-                    fs.Close();
-
-                    switch (act)
-                    {
-                        case "write":
-                            Google.Apis.Drive.v3.Data.File body = new Google.Apis.Drive.v3.Data.File()
-                            {
-                                Name = Path.GetFileName(DataFilePath),
-                                MimeType = "application/octet-stream",
-                                Description = "Описание"
-                            };
-                            byte[] byteArray = File.ReadAllBytes(DataFilePath);
-                            MemoryStream mStream = new MemoryStream(byteArray);
-                            FilesResource.GetRequest getRequest = service.Files.Get(Properties.Settings.Default.gFileId);
-                            bool create = false;
-                            try
-                            {
-                                getRequest.Execute();
-                            }
-                            catch
-                            {
-                                create = true;
-                            }
-
-                            if (create)
-                            {
-                                FilesResource.CreateMediaUpload createRequest;
-                                createRequest = service.Files.Create(body, mStream, body.MimeType);
-                                if (createRequest.Upload().Exception != null)
-                                {
-                                    result = createRequest.Upload().Exception.Message;
-                                }
-                                else
-                                {
-                                    if (Properties.Settings.Default.gFileId != createRequest.ResponseBody.Id)
-                                    {
-                                        Properties.Settings.Default.gFileId = createRequest.ResponseBody.Id;
-                                        Properties.Settings.Default.Save();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                FilesResource.UpdateMediaUpload updateRequest;
-                                updateRequest = service.Files.Update(body, Properties.Settings.Default.gFileId, mStream, body.MimeType);
-                                if (updateRequest.Upload().Exception != null)
-                                {
-                                    result = updateRequest.Upload().Exception.Message;
-                                }
-                            }
-                            
-                            break;
-!!! Считать, первой строкой дата последнего редактирования
-                        case "read":
-                            //FilesResource.GetRequest getRequest = service.Files.Get(Properties.Settings.Default.gFileId);
-                            //getRequest.Execute();
-                            //FileStream fsDownload = new FileStream("aa", FileMode.Open, FileAccess.Write);
-                            //getRequest.Download(fsDownload);
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                    //FilesResource.ListRequest listRequest = service.Files.List();
-                    ////
-
-                    //listRequest.PageSize = 400;
-                    //listRequest.Fields = "nextPageToken, files(id, webViewLink, webContentLink, name, size, mimeType)";//требуемые свойства загружаемых файлов(можно убрать лишнее или добавить требуемое)
-                    //                                                                                                   //  files.
-                    //IList<Google.Apis.Drive.v3.Data.File> files = listRequest.Execute().Files;
-                    //files.Clear();
-                }
-            }
-            catch (Exception ex)
-            {
-                Log.Error("#201706021625: " + ex.Message);
-            }
-            return result;
-        }
 
         /// <summary>
         /// Поиск ссылки

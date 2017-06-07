@@ -150,6 +150,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Drive.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="StringExt.cs" />
     <Compile Include="Link.cs" />

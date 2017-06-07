@@ -34,5 +34,41 @@ namespace TizTaboo.Properties {
                 this["gFileId"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string gFolderId {
+            get {
+                return ((string)(this["gFolderId"]));
+            }
+            set {
+                this["gFolderId"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IsSync {
+            get {
+                return ((bool)(this["IsSync"]));
+            }
+            set {
+                this["IsSync"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool firstRun {
+            get {
+                return ((bool)(this["firstRun"]));
+            }
+            set {
+                this["firstRun"] = value;
+            }
+        }
     }
 }

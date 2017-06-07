@@ -119,10 +119,9 @@ namespace TizTaboo
                 note.Confirm = chkbConfirm.Checked;
                 note.RunCount = intRunCount;
             }
-
-            Program.Links.Save(true);
+            Program.Links.LastEditDateTime = DateTime.Now;
+            Program.Links.Save(Properties.Settings.Default.IsSync);
             LoadData();
-            //btnNew_Click(null, null);
         }
 
         private void dgvAll_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)

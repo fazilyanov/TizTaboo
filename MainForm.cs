@@ -60,15 +60,10 @@ namespace TizTaboo
                 Environment.Exit(-1);
             }
 
-            dataFilePath = Application.StartupPath + "\\data";
+            dataFilePath = Application.StartupPath + "\\data.txt";
 
             if (File.Exists(dataFilePath))
             {
-                //int _n = int.Parse((Properties.Settings.Default.lastbackup ?? "0").ToString());
-                //_n = _n < 10 ? _n + 1 : 1;
-                //File.Copy(_basepath, _basepath + "_" + _n.ToString(), true);
-                //Properties.Settings.Default.lastbackup = _n.ToString();
-                //Properties.Settings.Default.Save();
                 Program.Links = new Links(dataFilePath);
                 Program.Links.Load();
             }
