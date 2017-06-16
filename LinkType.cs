@@ -1,6 +1,6 @@
 ﻿namespace TizTaboo
 {
-    internal enum faType
+    internal enum LinkType
     {
         Ссылка = 1,
         Мульти = 2,

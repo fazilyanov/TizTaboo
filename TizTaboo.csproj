@@ -150,12 +150,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CardForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CardForm.Designer.cs">
+      <DependentUpon>CardForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Drive.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="Settings.cs" />
     <Compile Include="StringExt.cs" />
     <Compile Include="Link.cs" />
     <Compile Include="Links.cs" />
-    <Compile Include="faType.cs" />
+    <Compile Include="LinkType.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -170,6 +177,9 @@
     <Compile Include="SettForm.Designer.cs">
       <DependentUpon>SettForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="CardForm.resx">
+      <DependentUpon>CardForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

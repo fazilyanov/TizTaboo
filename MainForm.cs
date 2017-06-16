@@ -1,14 +1,9 @@
 ﻿using GlobalHotKey;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Drive.v3;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace TizTaboo
@@ -73,7 +68,7 @@ namespace TizTaboo
                 if (result == DialogResult.Yes)
                 {
                     Program.Links = new Links(dataFilePath);
-                    Program.Links.Add(new Link() { Name = "Яндекс", Alias = "ya", Command = "https://ya.ru/", Type = faType.Ссылка });
+                    Program.Links.Add(new Link() { Name = "Яндекс", Alias = "ya", Command = "https://ya.ru/", Type = LinkType.Ссылка });
                     if (!Program.Links.Save(false))
                     {
                         MessageBox.Show("Ошибка создания базы!");
@@ -191,16 +186,16 @@ namespace TizTaboo
 
                     switch (link.Type)
                     {
-                        case faType.Ссылка:
+                        case LinkType.Ссылка:
                             Process.Start(link.Command, link.Param);
                             break;
 
-                        case faType.Консоль:
+                        case LinkType.Консоль:
                             File.WriteAllText(Application.StartupPath + "\\run.bat", link.Command);
                             Process.Start(Application.StartupPath + "\\run.bat");
                             break;
 
-                        case faType.Мульти:
+                        case LinkType.Мульти:
                             string[] cmd = link.Command.Split(';');
                             foreach (string item in cmd)
                             {

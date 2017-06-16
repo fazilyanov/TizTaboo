@@ -60,6 +60,22 @@ namespace TizTaboo
             return result;
         }
 
-       
+        /// <summary>
+        /// Конвертирует в integer
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="throwExceptionIfFailed"></param>
+        /// <returns></returns>
+        public static ulong ToULong(this string input, bool throwExceptionIfFailed = false)
+        {
+            ulong result;
+            var valid = ulong.TryParse(input, out result);
+            if (!valid)
+                if (throwExceptionIfFailed)
+                    throw new FormatException(string.Format("'{0}' cannot be converted as int", input));
+            return result;
+        }
+
+
     }
 }

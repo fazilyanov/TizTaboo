@@ -10,7 +10,7 @@ namespace TizTaboo
         /// <summary>
         /// Тип ссылки
         /// </summary>
-        public faType Type { get; set; }
+        public LinkType Type { get; set; }
 
         /// <summary>
         /// Алиас, уникальный ключ для списка
@@ -40,7 +40,7 @@ namespace TizTaboo
         /// <summary>
         /// Количество запусков
         /// </summary>
-        public int RunCount { get; set; } = 0;
+        public ulong RunCount { get; set; } = 0;
 
         /// <summary>
         /// Нужно ли подтверждение для запуска

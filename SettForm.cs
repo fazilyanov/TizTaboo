@@ -5,217 +5,113 @@ namespace TizTaboo
 {
     public partial class SettForm : Form
     {
-        private bool addmode = true;
-        private string curalias = "";
-        private string curname = "";
-
         public SettForm()
         {
             InitializeComponent();
         }
 
-        private void btnDel_Click(object sender, EventArgs e)
+        private void btnNew_Click(object sender, EventArgs e)
         {
-            if (!addmode && MessageBox.Show("Удалить записи?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            CardForm newForm = new CardForm(1, string.Empty);
+            newForm.ShowDialog();
+            LoadData();
+        }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            if (dgv.SelectedRows.Count == 1)
             {
-                foreach (DataGridViewRow item in dgvAll.SelectedRows)
-                {
-                    Program.Links.DeleteByAlias(item.Cells[1].Value.ToString());
-                }
+                CardForm newForm = new CardForm(2, dgv.SelectedRows[0].Cells["alias"].Value.ToString());
+                newForm.ShowDialog();
                 LoadData();
             }
         }
 
-        private void btnNew_Click(object sender, EventArgs e)
+        private void btnDel_Click(object sender, EventArgs e)
         {
-            tbName.ReadOnly = false;
-            tbName.Text = "";
-
-            tbAlias.ReadOnly = false;
-            tbAlias.Text = "";
-
-            cbType.SelectedIndex = 0;
-            cbType.Enabled = true;
-
-            tbCommand.ReadOnly = false;
-            tbCommand.Text = "";
-
-            tbParam.ReadOnly = false;
-            tbParam.Text = "";
-
-            chkbConfirm.Checked = false;
-
-            tbRunCount.ReadOnly = false;
-            tbRunCount.Text = "0";
-
-            dgvAll.ClearSelection();
-            btnSave.Text = "Добавить";
-            addmode = true;
-        }
-
-        private void btnSave_Click(object sender, EventArgs e)
-        {
-            if (!addmode && MessageBox.Show("Перезаписать " + curname + "(" + curalias + ")" + "?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.No)
+            if (MessageBox.Show("Удалить записи?", "Подтвердите действие", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                return;
-            }
-
-            if ((tbName.Text = tbName.Text.Trim()).Length == 0)
-            {
-                MessageBox.Show("Нет имени", "Ошибка");
-                return;
-            }
-
-            if ((tbAlias.Text = tbAlias.Text.Trim()).Length == 0)
-            {
-                MessageBox.Show("Нет алиаса", "Ошибка");
-                return;
-            }
-
-            if ((tbCommand.Text = tbCommand.Text.Trim()).Length == 0)
-            {
-                MessageBox.Show("Нет команды", "Ошибка");
-                return;
-            }
-
-            //
-            int intRunCount = 0;
-            int.TryParse(tbRunCount.Text.Trim(), out intRunCount);
-
-            faType type = faType.Ссылка;
-            Enum.TryParse<faType>(cbType.SelectedValue.ToString(), out type);
-
-            if (addmode)
-                if (Program.Links.GetByAlias(tbAlias.Text) == null)
-                    Program.Links.Add(new Link()
-                    {
-                        Name = tbName.Text,
-                        Alias = tbAlias.Text,
-                        Command = tbCommand.Text,
-                        Param = tbParam.Text,
-                        Type = type,
-                        Confirm = chkbConfirm.Checked,
-                        RunCount = intRunCount
-                    });
-                else
+                foreach (DataGridViewRow item in dgv.SelectedRows)
                 {
-                    MessageBox.Show("C алиасом '" + tbAlias.Text + "' уже есть запись", "Ошибка");
-                    return;
+                    Program.Links.DeleteByAlias(item.Cells["alias"].Value.ToString());
                 }
-            else
-            {
-                Link note = Program.Links.GetByAlias(curalias);
-
-                if (note.Alias.Trim() != tbAlias.Text && Program.Links.GetByAlias(tbAlias.Text) != null)
-                {
-                    MessageBox.Show("C алиасом '" + curalias + "' уже есть запись", "Ошибка");
-                    return;
-                }
-                note.Name = tbName.Text;
-                note.Alias = tbAlias.Text;
-                note.Command = tbCommand.Text;
-                note.Param = tbParam.Text;
-                note.Type = type;
-                note.Confirm = chkbConfirm.Checked;
-                note.RunCount = intRunCount;
-            }
-            Program.Links.LastEditDateTime = DateTime.Now;
-            Program.Links.Save(Properties.Settings.Default.IsSync);
-            LoadData();
-        }
-
-        private void dgvAll_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
-        {
-            try
-            {
-                if (e.RowIndex > -1)
-                {
-                    faType type = faType.Ссылка;
-                    Enum.TryParse<faType>(dgvAll.Rows[e.RowIndex].Cells["type"].Value.ToString(), out type);
-                    cbType.SelectedIndex = (int)type - 1;
-                    cbType.Enabled = true;
-
-                    tbName.ReadOnly = false;
-                    tbName.Text = curname = dgvAll.Rows[e.RowIndex].Cells["name"].Value.ToString().Trim();
-
-                    tbAlias.ReadOnly = false;
-                    tbAlias.Text = curalias = dgvAll.Rows[e.RowIndex].Cells["alias"].Value.ToString().Trim();
-
-                    tbCommand.ReadOnly = false;
-                    tbCommand.Text = dgvAll.Rows[e.RowIndex].Cells["command"].Value.ToString();
-
-                    tbParam.ReadOnly = false;
-                    tbParam.Text = dgvAll.Rows[e.RowIndex].Cells["param"].Value.ToString();
-
-                    tbRunCount.ReadOnly = false;
-                    tbRunCount.Text = dgvAll.Rows[e.RowIndex].Cells["count"].Value.ToString();
-
-                    chkbConfirm.Checked = dgvAll.Rows[e.RowIndex].Cells["confirm"].Value.ToString() == "Да" ? true : false;
-
-                    btnSave.Text = "Сохранить";
-                    addmode = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
+                LoadData();
             }
         }
 
         private void LoadData()
         {
             int saveRow = 0;
-            int selectedRowIndex = 0;
-            if (dgvAll.Rows.Count > 0)
+            string sortedColumnName = string.Empty;
+            int sortOrder = 0;
+            if (dgv.SortedColumn != null)
             {
-                selectedRowIndex = dgvAll.CurrentCell.RowIndex;
-                saveRow = dgvAll.FirstDisplayedCell.RowIndex;
+                sortedColumnName = dgv.SortedColumn.Name;
+                sortOrder = (int)dgv.SortOrder;
+                sortOrder = sortOrder > 0 ? sortOrder - 1 : 0;
             }
-            dgvAll.Rows.Clear();
+
+            int selectedRowIndex = 0;
+            if (dgv.Rows.Count > 0)
+            {
+                selectedRowIndex = dgv.CurrentCell.RowIndex;
+                saveRow = dgv.FirstDisplayedCell.RowIndex;
+            }
+            dgv.Rows.Clear();
             Program.Links.LinkList.Sort((a, b) => a.Name.CompareTo(b.Alias));
             foreach (Link note in Program.Links.LinkList)
-                dgvAll.Rows.Add(note.Name, note.Alias, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(), note.RunCount.ToString(), note.Confirm ? "Да" : "Нет");
-            dgvAll.Sort(dgvAll.Columns["alias"], System.ComponentModel.ListSortDirection.Ascending);
-
-            dgvAll.ClearSelection();
-
-            if (saveRow != 0 && saveRow < dgvAll.Rows.Count)
+                dgv.Rows.Add(note.Alias, note.Name, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(), note.RunCount.ToString(), note.Confirm ? "Да" : "Нет");
+            if (sortedColumnName.Length > 0)
             {
-                dgvAll.FirstDisplayedScrollingRowIndex = saveRow;
-                dgvAll.Rows[selectedRowIndex].Selected = true;
+                dgv.Sort(dgv.Columns[sortedColumnName], (System.ComponentModel.ListSortDirection)sortOrder);
             }
+            else
+            {
+                dgv.Sort(dgv.Columns["alias"], System.ComponentModel.ListSortDirection.Ascending);
+            }
+            if (saveRow != 0 && saveRow < dgv.Rows.Count)
+            {
+                dgv.FirstDisplayedScrollingRowIndex = saveRow;
+            }
+            dgv.ClearSelection();
+            if (selectedRowIndex > 0) dgv.Rows[selectedRowIndex].Selected = true;
         }
 
         private void SettForm_Load(object sender, EventArgs e)
         {
-            dgvAll.Columns.Add("name", "Имя");
-            dgvAll.Columns.Add("alias", "Алиас");
-            dgvAll.Columns.Add("type", "Тип");
-            dgvAll.Columns.Add("command", "Путь | Ссылка");
-            dgvAll.Columns.Add("param", "Параметр");
-            dgvAll.Columns.Add("when", "Последний запуск");
-            dgvAll.Columns.Add("count", "Запускалось");
-            dgvAll.Columns.Add("confirm", "Предупреждать");
+            dgv.Columns.Add("alias", "Псевдоним");
+            dgv.Columns.Add("name", "Имя / Описание");
 
-            dgvAll.Columns["name"].Width = 160;
-            dgvAll.Columns["alias"].Width = 160;
-            dgvAll.Columns["type"].Width = 100;
-            dgvAll.Columns["command"].Width = 400;
-            dgvAll.Columns["param"].Width = 100;
-            dgvAll.Columns["when"].Width = 150;
-            dgvAll.Columns["count"].Width = 150;
-            dgvAll.Columns["confirm"].Width = 150;
+            dgv.Columns.Add("type", "Тип");
+            dgv.Columns.Add("command", "URL / Путь");
+            dgv.Columns.Add("param", "Параметры");
+            dgv.Columns.Add("when", "Последний запуск");
+            dgv.Columns.Add("count", "Количество запусков");
+            dgv.Columns.Add("confirm", "Подтверждать запуск");
 
-            cbType.DataSource = Enum.GetValues(typeof(faType));
+            dgv.Columns["alias"].Width = 160;
+            dgv.Columns["name"].Width = 200;
+            dgv.Columns["type"].Width = 100;
+            dgv.Columns["command"].Width = 400;
+            dgv.Columns["param"].Width = 100;
+            dgv.Columns["when"].Width = 150;
+            dgv.Columns["count"].Width = 150;
+            dgv.Columns["confirm"].Width = 150;
 
             LoadData();
-            dgvAll.ClearSelection();
+            dgv.ClearSelection();
         }
 
-        private void tbName_Leave(object sender, EventArgs e)
+        private void dgv_SelectionChanged(object sender, EventArgs e)
         {
-            if (tbAlias.Text.Trim().Length == 0)
-                tbAlias.Text = tbName.Text;
+            btnEdit.Enabled = btnDel.Enabled = false;
+            btnEdit.Enabled = dgv.SelectedRows.Count == 1;
+            btnDel.Enabled = dgv.SelectedRows.Count > 0;
+        }
+
+        private void dgv_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            btnEdit_Click(sender, null);
         }
     }
 }

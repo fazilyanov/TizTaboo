@@ -1,13 +1,8 @@
-﻿using Google.Apis.Auth.OAuth2;
-using Google.Apis.Drive.v3;
-using Google.Apis.Services;
-using Google.Apis.Util.Store;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace TizTaboo
 {
@@ -111,7 +106,6 @@ namespace TizTaboo
                     
                 }
 
-
                 toLoad = File.ReadAllText(DataFilePath);
 
                 if (!string.IsNullOrEmpty(toLoad))
@@ -137,8 +131,8 @@ namespace TizTaboo
                                         Param = arrParam[3],
                                         Confirm = arrParam[4] == "1",
                                         LastExec = DateTime.ParseExact(arrParam[5], "dd.MM.yyyy HH:mm:ss", new CultureInfo("ru-RU")),
-                                        Type = arrParam[6].ParseEnum<faType>(),
-                                        RunCount = arrParam[7].ToInt()
+                                        Type = arrParam[6].ParseEnum<LinkType>(),
+                                        RunCount = arrParam[7].ToULong()
                                     });
                                 }
                             }
