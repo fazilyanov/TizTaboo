@@ -348,7 +348,7 @@ namespace TizTaboo
             if (text.Contains("`") || text.Contains("ё"))
             {
                 HideForm();
-                SettForm newForm = new SettForm();
+                LinksForm newForm = new LinksForm();
                 tbAlias.Clear();
                 newForm.ShowDialog();
                 ShowForm();

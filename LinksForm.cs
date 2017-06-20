@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace TizTaboo
 {
-    public partial class SettForm : Form
+    public partial class LinksForm : Form
     {
-        public SettForm()
+        public LinksForm()
         {
             InitializeComponent();
         }
@@ -29,7 +29,7 @@ namespace TizTaboo
 
         private void btnDel_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Удалить записи?", "Подтвердите действие", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show($"Удалить запи{(dgv.SelectedRows.Count == 1 ? "сь" : "си")}?", "Подтвердите действие", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 foreach (DataGridViewRow item in dgv.SelectedRows)
                 {
@@ -59,8 +59,8 @@ namespace TizTaboo
             }
             dgv.Rows.Clear();
             Program.Links.LinkList.Sort((a, b) => a.Name.CompareTo(b.Alias));
-            foreach (Link note in Program.Links.LinkList)
-                dgv.Rows.Add(note.Alias, note.Name, note.Type.ToString(), note.Command, note.Param, note.LastExec.ToString(), note.RunCount.ToString(), note.Confirm ? "Да" : "Нет");
+            foreach (Link link in Program.Links.LinkList)
+                dgv.Rows.Add(link.Alias, link.Name, link.Type.ToString(), link.Command, link.Param, link.LastExec.ToString(), link.RunCount.ToString(), link.Confirm ? "Да" : "Нет");
             if (sortedColumnName.Length > 0)
             {
                 dgv.Sort(dgv.Columns[sortedColumnName], (System.ComponentModel.ListSortDirection)sortOrder);
@@ -112,6 +112,11 @@ namespace TizTaboo
         private void dgv_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             btnEdit_Click(sender, null);
+        }
+
+        private void buttonPanel_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }

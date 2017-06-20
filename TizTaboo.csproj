@@ -16,7 +16,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
-    <PublishUrl>D:\12\</PublishUrl>
+    <PublishUrl>C:\1\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -26,7 +26,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -158,6 +158,12 @@
     </Compile>
     <Compile Include="Drive.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="ParamsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ParamsForm.Designer.cs">
+      <DependentUpon>ParamsForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Settings.cs" />
     <Compile Include="StringExt.cs" />
     <Compile Include="Link.cs" />
@@ -171,11 +177,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SettForm.cs">
+    <Compile Include="LinksForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SettForm.Designer.cs">
-      <DependentUpon>SettForm.cs</DependentUpon>
+    <Compile Include="LinksForm.Designer.cs">
+      <DependentUpon>LinksForm.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="CardForm.resx">
       <DependentUpon>CardForm.cs</DependentUpon>
@@ -193,8 +199,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="SettForm.resx">
-      <DependentUpon>SettForm.cs</DependentUpon>
+    <EmbeddedResource Include="LinksForm.resx">
+      <DependentUpon>LinksForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="packages.config" />

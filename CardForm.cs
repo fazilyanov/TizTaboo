@@ -29,6 +29,7 @@ namespace TizTaboo
                     chkbConfirm.Checked = tbRunCount.ReadOnly = false;
                     cbType.SelectedIndex = 0;
                     tbRunCount.Text = "0";
+                    Text = "Новая запись";
                     break;
                 // Редактирование
                 case 2:
@@ -40,6 +41,7 @@ namespace TizTaboo
                     tbParam.Text = link.Param;
                     tbRunCount.Value = link.RunCount;
                     chkbConfirm.Checked = link.Confirm;
+                    Text = "Изменение записи";
                     break;
             }
         }
