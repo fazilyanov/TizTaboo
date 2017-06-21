@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace TizTaboo
 {
@@ -25,7 +26,7 @@ namespace TizTaboo
         /// <summary>
         ///  Регистрируем гк
         /// </summary>
-        private readonly HotKeyManager hotKeyManager;
+        private HotKeyManager hotKeyManager;
 
         private bool altF4Pressed;
 
@@ -42,18 +43,8 @@ namespace TizTaboo
         public MainForm()
         {
             InitializeComponent();
-            try
-            {
-                // Подключаем горячие клавиши
-                hotKeyManager = new HotKeyManager();
-                hotKeyManager.KeyPressed += HotKeyManagerPressed;
-                hotKeyManager.Register(System.Windows.Input.Key.X, System.Windows.Input.ModifierKeys.Alt);
-            }
-            catch
-            {
-                MessageBox.Show("Не удалось зарегистрировать глобальные горячие клавишы! Возможно, приложение уже запущено.", "Ошибка");
-                Environment.Exit(-1);
-            }
+
+            HotKeyRegister();
 
             dataFilePath = Application.StartupPath + "\\data.txt";
 
@@ -76,6 +67,33 @@ namespace TizTaboo
                     }
                 }
                 else Environment.Exit(-1);
+            }
+        }
+
+        private void HotKeyRegister()
+        {
+            try
+            {
+                // Подключаем горячие клавиши
+                hotKeyManager = new HotKeyManager();
+                hotKeyManager.KeyPressed += HotKeyManagerPressed;
+
+                int hotKey = Properties.Settings.Default.hotKey;
+                if (hotKey == 0)
+                {
+                    hotKey = (int)System.Windows.Input.Key.X;
+                }
+                int modKey = 0;
+                if (Properties.Settings.Default.Control) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Control;
+                if (Properties.Settings.Default.Shift) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Shift;
+                if (Properties.Settings.Default.Alt) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Alt;
+                !!!!!!!!
+                hotKeyManager.Register((Key)hotKey, (ModifierKeys)modKey);
+            }
+            catch
+            {
+                MessageBox.Show("Не удалось зарегистрировать глобальные горячие клавишы! Возможно, приложение уже запущено или .", "Ошибка");
+                Environment.Exit(-1);
             }
         }
 
@@ -151,6 +169,9 @@ namespace TizTaboo
             BackColor = tbAlias.BackColor = Color.FromArgb(1, 36, 86);
             Size = new Size(width, height);
             Location = new Point(topx, topy);
+            //
+
+            //
             ShowForm();
         }
 
@@ -179,7 +200,7 @@ namespace TizTaboo
                 Link link = Program.Links.GetByAlias(alias);
                 if (link != null)
                 {
-                    if (link.Confirm && MessageBox.Show("Точно запустить?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.No)
+                    if (link.Confirm && MessageBox.Show("Подтвердите запуск?", "Подтвердите действие", MessageBoxButtons.YesNo) == DialogResult.No)
                     {
                         return false;
                     }
@@ -251,8 +272,8 @@ namespace TizTaboo
                     {
                         Panel panel = new Panel();
                         panel.Name = "subpanel_" + i;
-                        panel.Location = new Point(20, (i * 24) + 20);
-                        panel.Size = new Size(this.Width - 40, 20);
+                        panel.Location = new Point(10, (i * 24) + 10);
+                        panel.Size = new Size(Width - 20, 20);
                         panel.BorderStyle = BorderStyle.None;
                         panel.ForeColor = (i == 0) ? Color.FromArgb(1, 36, 86) : Color.White;
                         panel.BackColor = (i == 0) ? Color.White : Color.FromArgb(1, 36, 86);
@@ -263,7 +284,7 @@ namespace TizTaboo
                         lbl.Parent = panel;
                         lbl.Name = "label_" + i;
                         lbl.AutoSize = true;
-                        lbl.Location = new Point(20, 4);
+                        lbl.Location = new Point(10, 4);
                         lbl.Text = "• " + link.Name;
                         lbl.Font = new Font(lbl.Font.FontFamily, 10);
 
@@ -293,8 +314,6 @@ namespace TizTaboo
                 MessageBox.Show("Ошибка");
             }
         }
-
-       
 
         private void tbAlias_KeyDown(object sender, KeyEventArgs e)
         {
@@ -344,26 +363,40 @@ namespace TizTaboo
 
         private void tbAlias_TextChanged(object sender, EventArgs e)
         {
-            string text = tbAlias.Text.Trim().ToLower();
-            if (text.Contains("`") || text.Contains("ё"))
+            Seek(tbAlias.Text.Trim().ToLower());
+        }
+
+        private void btnContextMenu_Click(object sender, EventArgs e)
+        {
+            contextMenuStrip.Show(this.Location.X + this.width - contextMenuStrip.Width, this.Location.Y);
+        }
+
+        private void выходToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Завершить работу TizTaboo?", "Подтвердите действия", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                HideForm();
-                LinksForm newForm = new LinksForm();
-                tbAlias.Clear();
-                newForm.ShowDialog();
-                ShowForm();
-            }
-            else if (text == "exit" || text == "учше")
-            {
-                if (MessageBox.Show("Закрыть TizTaboo?", "Подтверди", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    Environment.Exit(0);
-                }
+                Environment.Exit(0);
             }
             else
-            {
-                Seek(tbAlias.Text);
-            }
+                ShowForm();
+        }
+
+        private void списокПсевдонимовToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HideForm();
+            LinksForm newForm = new LinksForm();
+            tbAlias.Clear();
+            newForm.ShowDialog();
+            ShowForm();
+        }
+
+        private void настройкиToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HideForm();
+            ParamsForm newForm = new ParamsForm();
+            tbAlias.Clear();
+            newForm.ShowDialog();
+            ShowForm();
         }
     }
 }

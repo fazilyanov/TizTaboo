@@ -47,6 +47,11 @@ namespace TizTaboo
         /// </summary>
         public bool Confirm { get; set; } = false;
 
+        /// <summary>
+        /// Нельзя удалять
+        /// </summary>
+        public bool Readonly { get; set; } = false;
+
         public Link()
         {
         }

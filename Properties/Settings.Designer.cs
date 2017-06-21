@@ -70,5 +70,65 @@ namespace TizTaboo.Properties {
                 this["firstRun"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string hotKeyText {
+            get {
+                return ((string)(this["hotKeyText"]));
+            }
+            set {
+                this["hotKeyText"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int hotKey {
+            get {
+                return ((int)(this["hotKey"]));
+            }
+            set {
+                this["hotKey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Control {
+            get {
+                return ((bool)(this["Control"]));
+            }
+            set {
+                this["Control"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool Alt {
+            get {
+                return ((bool)(this["Alt"]));
+            }
+            set {
+                this["Alt"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Shift {
+            get {
+                return ((bool)(this["Shift"]));
+            }
+            set {
+                this["Shift"] = value;
+            }
+        }
     }
 }

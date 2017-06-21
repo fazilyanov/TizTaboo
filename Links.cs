@@ -116,6 +116,7 @@ namespace TizTaboo
                         // В первой строке хранится дата последнего редактирования списка ссылок
                         LastEditDateTime = DateTime.ParseExact(arrNotes[0], "dd.MM.yyyy HH:mm:ss", new CultureInfo("ru-RU"));
 
+                        // Генерим список 
                         foreach (string note in arrNotes.Skip(1))
                         {
                             if (!string.IsNullOrEmpty(note))

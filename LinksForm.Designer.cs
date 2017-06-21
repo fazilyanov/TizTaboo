@@ -44,7 +44,6 @@
             this.buttonPanel.Name = "buttonPanel";
             this.buttonPanel.Size = new System.Drawing.Size(1246, 30);
             this.buttonPanel.TabIndex = 24;
-            this.buttonPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.buttonPanel_Paint);
             // 
             // btnEdit
             // 
@@ -94,7 +93,7 @@
             this.dgv.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_CellDoubleClick);
             this.dgv.SelectionChanged += new System.EventHandler(this.dgv_SelectionChanged);
             // 
-            // SettForm
+            // LinksForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -102,10 +101,9 @@
             this.Controls.Add(this.buttonPanel);
             this.Controls.Add(this.dgv);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "SettForm";
+            this.Name = "LinksForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Алиасы";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.SettForm_Load);
             this.buttonPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).EndInit();

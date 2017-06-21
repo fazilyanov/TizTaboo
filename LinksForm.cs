@@ -114,9 +114,6 @@ namespace TizTaboo
             btnEdit_Click(sender, null);
         }
 
-        private void buttonPanel_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
+       
     }
 }
