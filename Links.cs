@@ -103,7 +103,6 @@ namespace TizTaboo
                         fileId = Properties.Settings.Default.gFileId,
                         folderId = Properties.Settings.Default.gFolderId
                     };
-                    
                 }
 
                 toLoad = File.ReadAllText(DataFilePath);

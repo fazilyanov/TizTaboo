@@ -144,7 +144,7 @@ namespace TizTaboo
             {
                 Name = Path.GetFileName(localFilePath),
                 MimeType = "application/octet-stream",
-                Description = "Файл данных программы TizTabu",
+                Description = "Файл данных программы TizTaboo", 
             };
 
             // Проверяем существует наш файл в облаке, если нет - создаем

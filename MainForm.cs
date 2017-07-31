@@ -46,6 +46,10 @@ namespace TizTaboo
 
             HotKeyRegister();
 
+            !!! Гугле подлиннее назвать файл.. при первой синхронизации искать этот файл, узнать его id и записать
+            !!! Далее скачивать файл сравнивать и отправлять обратно если что
+
+
             dataFilePath = Application.StartupPath + "\\data.txt";
 
             if (File.Exists(dataFilePath))
@@ -62,7 +66,7 @@ namespace TizTaboo
                     Program.Links.Add(new Link() { Name = "Яндекс", Alias = "ya", Command = "https://ya.ru/", Type = LinkType.Ссылка });
                     if (!Program.Links.Save(false))
                     {
-                        MessageBox.Show("Ошибка создания базы!");
+                        MessageBox.Show("Ошибка создания файла данных!");
                         Environment.Exit(-1);
                     }
                 }
@@ -79,20 +83,26 @@ namespace TizTaboo
                 hotKeyManager.KeyPressed += HotKeyManagerPressed;
 
                 int hotKey = Properties.Settings.Default.hotKey;
+                int modKey = 0;
+
+                //
                 if (hotKey == 0)
                 {
                     hotKey = (int)System.Windows.Input.Key.X;
+                    modKey = (int)System.Windows.Input.ModifierKeys.Alt;
                 }
-                int modKey = 0;
-                if (Properties.Settings.Default.Control) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Control;
-                if (Properties.Settings.Default.Shift) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Shift;
-                if (Properties.Settings.Default.Alt) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Alt;
-                !!!!!!!!
+                else
+                {
+                    if (Properties.Settings.Default.Control) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Control;
+                    if (Properties.Settings.Default.Shift) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Shift;
+                    if (Properties.Settings.Default.Alt) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Alt;
+                }
+                
                 hotKeyManager.Register((Key)hotKey, (ModifierKeys)modKey);
             }
             catch
             {
-                MessageBox.Show("Не удалось зарегистрировать глобальные горячие клавишы! Возможно, приложение уже запущено или .", "Ошибка");
+                MessageBox.Show("Не удалось зарегистрировать глобальные горячие клавишы! Возможно, приложение уже запущено.", "Ошибка");
                 Environment.Exit(-1);
             }
         }
