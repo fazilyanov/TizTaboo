@@ -35,7 +35,7 @@ namespace TizTaboo
         /// <summary>
         /// Время последнего запуска
         /// </summary>
-        public DateTime LastExec { get; set; } = DateTime.Now;
+        public DateTime LastEditDate { get; set; } = DateTime.Now;
 
         /// <summary>
         /// Количество запусков

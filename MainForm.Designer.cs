@@ -34,6 +34,7 @@
             this.настройкиToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.синхронизироватьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.btnContextMenu)).BeginInit();
             this.contextMenuStrip.SuspendLayout();
             this.SuspendLayout();
@@ -92,13 +93,14 @@
             // contextMenuStrip
             // 
             this.contextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.синхронизироватьToolStripMenuItem,
             this.списокПсевдонимовToolStripMenuItem,
             this.настройкиToolStripMenuItem,
             this.toolStripMenuItem1,
             this.выходToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip";
             this.contextMenuStrip.ShowImageMargin = false;
-            this.contextMenuStrip.Size = new System.Drawing.Size(168, 98);
+            this.contextMenuStrip.Size = new System.Drawing.Size(168, 120);
             // 
             // списокПсевдонимовToolStripMenuItem
             // 
@@ -125,6 +127,13 @@
             this.выходToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
             this.выходToolStripMenuItem.Text = "Выход";
             this.выходToolStripMenuItem.Click += new System.EventHandler(this.выходToolStripMenuItem_Click);
+            // 
+            // синхронизироватьToolStripMenuItem
+            // 
+            this.синхронизироватьToolStripMenuItem.Name = "синхронизироватьToolStripMenuItem";
+            this.синхронизироватьToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.синхронизироватьToolStripMenuItem.Text = "Синхронизировать";
+            this.синхронизироватьToolStripMenuItem.Click += new System.EventHandler(this.синхронизироватьToolStripMenuItem_Click);
             // 
             // MainForm
             // 
@@ -169,6 +178,7 @@
         private System.Windows.Forms.ToolStripMenuItem настройкиToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem выходToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem синхронизироватьToolStripMenuItem;
     }
 }
 

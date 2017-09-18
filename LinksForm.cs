@@ -60,7 +60,7 @@ namespace TizTaboo
             dgv.Rows.Clear();
             Program.Links.LinkList.Sort((a, b) => a.Name.CompareTo(b.Alias));
             foreach (Link link in Program.Links.LinkList)
-                dgv.Rows.Add(link.Alias, link.Name, link.Type.ToString(), link.Command, link.Param, link.LastExec.ToString(), link.RunCount.ToString(), link.Confirm ? "Да" : "Нет");
+                dgv.Rows.Add(link.Alias, link.Name, link.Type.ToString(), link.Command, link.Param, link.LastEditDate.ToString(), link.RunCount.ToString(), link.Confirm ? "Да" : "Нет");
             if (sortedColumnName.Length > 0)
             {
                 dgv.Sort(dgv.Columns[sortedColumnName], (System.ComponentModel.ListSortDirection)sortOrder);

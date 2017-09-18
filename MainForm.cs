@@ -28,6 +28,9 @@ namespace TizTaboo
         /// </summary>
         private HotKeyManager hotKeyManager;
 
+        /// <summary>
+        /// Для отлова сочетания Alt + F4
+        /// </summary>
         private bool altF4Pressed;
 
         /// <summary>
@@ -46,16 +49,20 @@ namespace TizTaboo
 
             HotKeyRegister();
 
-            !!! Гугле подлиннее  назвать файл.. при первой синхронизации искать этот файл, узнать его id и записать
-            !!! Далее скачивать файл сравнивать и отправлять обратно если что
+            //!!! Гугле подлиннее  назвать файл.. при первой синхронизации искать этот файл, узнать его id и записать
+            //!!! Далее скачивать файл сравнивать и отправлять обратно если что
 
-
-            dataFilePath = Application.StartupPath + "\\data.txt";
+            dataFilePath = Application.StartupPath + "\\data";
 
             if (File.Exists(dataFilePath))
             {
                 Program.Links = new Links(dataFilePath);
                 Program.Links.Load();
+                //foreach (Link item in Program.Links.LinkList)
+                //{
+                //    item.LastEditDate = new DateTime(2001, 1, 1, 0, 0, 0);
+                //}
+                //Program.Links.Save(false);
             }
             else
             {
@@ -64,7 +71,7 @@ namespace TizTaboo
                 {
                     Program.Links = new Links(dataFilePath);
                     Program.Links.Add(new Link() { Name = "Яндекс", Alias = "ya", Command = "https://ya.ru/", Type = LinkType.Ссылка });
-                    if (!Program.Links.Save(false))
+                    if (!Program.Links.Save())
                     {
                         MessageBox.Show("Ошибка создания файла данных!");
                         Environment.Exit(-1);
@@ -97,7 +104,7 @@ namespace TizTaboo
                     if (Properties.Settings.Default.Shift) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Shift;
                     if (Properties.Settings.Default.Alt) modKey = modKey | (int)System.Windows.Input.ModifierKeys.Alt;
                 }
-                
+
                 hotKeyManager.Register((Key)hotKey, (ModifierKeys)modKey);
             }
             catch
@@ -179,9 +186,6 @@ namespace TizTaboo
             BackColor = tbAlias.BackColor = Color.FromArgb(1, 36, 86);
             Size = new Size(width, height);
             Location = new Point(topx, topy);
-            //
-
-            //
             ShowForm();
         }
 
@@ -234,8 +238,7 @@ namespace TizTaboo
                                 if (n != null)
                                 {
                                     Process.Start(n.Command, n.Param);
-                                    n.LastExec = DateTime.Now;
-                                    n.RunCount = n.RunCount > 99999 ? 0 : n.RunCount + 1;
+                                    n.RunCount = n.RunCount > 999999 ? 0 : n.RunCount + 1;
                                 }
                             }
                             break;
@@ -243,12 +246,11 @@ namespace TizTaboo
                         default:
                             break;
                     }
-                    link.LastExec = DateTime.Now;
-                    link.RunCount = link.RunCount > 99999 ? 0 : link.RunCount + 1;
+                    link.RunCount = link.RunCount > 999999 ? 0 : link.RunCount + 1;
                     // Записываем в файл не чаще, чем каждые 3 часа
                     if ((DateTime.Now - lastSaveTime).Hours > 3)
                     {
-                        Program.Links.Save(false);
+                        Program.Links.Save();
                         lastSaveTime = DateTime.Now;
                     }
                 }
@@ -407,6 +409,11 @@ namespace TizTaboo
             tbAlias.Clear();
             newForm.ShowDialog();
             ShowForm();
+        }
+
+        private void синхронизироватьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Program.Links.Sync();
         }
     }
 }

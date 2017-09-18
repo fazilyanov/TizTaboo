@@ -58,15 +58,16 @@ namespace TizTaboo
         /// <summary>
         ///  Проверяеn есть ли файл на
         /// </summary>
-        /// <param name="fileId"></param>
+        /// <param name="idf"></param>
         /// <param name="service"></param>
         /// <returns></returns>
-        private bool FileExists(string fileId)
+        public bool FileExists(string idf = null)
         {
             if (Service == null)
                 return false;
+            idf = idf ?? fileId;
 
-            FilesResource.GetRequest getRequest = Service.Files.Get(fileId);
+            FilesResource.GetRequest getRequest = Service.Files.Get(idf);
             try
             {
                 Google.Apis.Drive.v3.Data.File f = getRequest.Execute();
@@ -144,11 +145,11 @@ namespace TizTaboo
             {
                 Name = Path.GetFileName(localFilePath),
                 MimeType = "application/octet-stream",
-                Description = "Файл данных программы TizTaboo", 
+                Description = "Файл данных программы TizTaboo",
             };
 
             // Проверяем существует наш файл в облаке, если нет - создаем
-            if (!FileExists(fileId))
+            if (!FileExists())
             {
                 file.Parents = new List<string> { folderId };
                 FilesResource.CreateMediaUpload createRequest = Service.Files.Create(file, mStream, file.MimeType);

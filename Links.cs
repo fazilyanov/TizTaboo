@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
+using System.Windows.Forms;
 
 namespace TizTaboo
 {
@@ -17,12 +17,7 @@ namespace TizTaboo
         public List<Link> LinkList { get; set; }
 
         /// <summary>
-        /// Дата последнего редактирования, нужна для синхронизации
-        /// </summary>
-        public DateTime LastEditDateTime { get; set; }
-
-        /// <summary>
-        /// Путь для хранения на диске
+        /// Путь до файла с алиасами рядом с приложением
         /// </summary>
         public string DataFilePath { get; set; }
 
@@ -95,16 +90,6 @@ namespace TizTaboo
             string toLoad = null;
             try
             {
-                // Скачаем файл с облака
-                if (Properties.Settings.Default.IsSync)
-                {
-                    Drive drive = new Drive()
-                    {
-                        fileId = Properties.Settings.Default.gFileId,
-                        folderId = Properties.Settings.Default.gFolderId
-                    };
-                }
-
                 toLoad = File.ReadAllText(DataFilePath);
 
                 if (!string.IsNullOrEmpty(toLoad))
@@ -112,11 +97,8 @@ namespace TizTaboo
                     arrNotes = toLoad.Split(new string[] { "*#*\n" }, StringSplitOptions.None);
                     if (arrNotes.Length > 0)
                     {
-                        // В первой строке хранится дата последнего редактирования списка ссылок
-                        LastEditDateTime = DateTime.ParseExact(arrNotes[0], "dd.MM.yyyy HH:mm:ss", new CultureInfo("ru-RU"));
-
-                        // Генерим список 
-                        foreach (string note in arrNotes.Skip(1))
+                        // Генерим список
+                        foreach (string note in arrNotes)
                         {
                             if (!string.IsNullOrEmpty(note))
                             {
@@ -130,7 +112,7 @@ namespace TizTaboo
                                         Command = arrParam[2],
                                         Param = arrParam[3],
                                         Confirm = arrParam[4] == "1",
-                                        LastExec = DateTime.ParseExact(arrParam[5], "dd.MM.yyyy HH:mm:ss", new CultureInfo("ru-RU")),
+                                        LastEditDate = DateTime.ParseExact(arrParam[5], "dd.MM.yyyy HH:mm:ss", new CultureInfo("ru-RU")),
                                         Type = arrParam[6].ParseEnum<LinkType>(),
                                         RunCount = arrParam[7].ToULong()
                                     });
@@ -152,11 +134,11 @@ namespace TizTaboo
         /// <summary>
         /// Записываем данные в файл
         /// </summary>
-        public bool Save(bool sync)
+        public bool Save()
         {
             try
             {
-                string toSaveText = LastEditDateTime.ToString("dd.MM.yyyy HH:mm:ss") + "*#*\n";
+                string toSaveText = string.Empty;
                 foreach (Link item in LinkList)
                 {
                     toSaveText += item.Alias + "*|*";
@@ -164,28 +146,12 @@ namespace TizTaboo
                     toSaveText += item.Command + "*|*";
                     toSaveText += item.Param + "*|*";
                     toSaveText += item.Confirm ? "1" : "0" + "*|*";
-                    toSaveText += item.LastExec.ToString("dd.MM.yyyy HH:mm:ss") + "*|*";
+                    toSaveText += item.LastEditDate.ToString("dd.MM.yyyy HH:mm:ss") + "*|*";
                     toSaveText += item.Type.ToString() + "*|*";
                     toSaveText += item.RunCount + "*#*\n";
                 }
 
                 File.WriteAllText(DataFilePath, toSaveText);
-
-                if (sync)
-                {
-                    Drive drive = new Drive()
-                    {
-                        fileId = Properties.Settings.Default.gFileId,
-                        folderId = Properties.Settings.Default.gFolderId
-                    };
-
-                    if (drive.UploadFile(DataFilePath))
-                    {
-                        Properties.Settings.Default.gFileId = drive.fileId;
-                        Properties.Settings.Default.gFolderId = drive.folderId;
-                        Properties.Settings.Default.Save();
-                    }
-                }
             }
             catch (Exception ex)
             {
@@ -195,6 +161,62 @@ namespace TizTaboo
             return true;
         }
 
+        public bool Sync()
+        {
+            // Путь для скаченного из облака файла
+            string cloudDataFilePath = Application.StartupPath + "\\data_cloud";
+
+            // Подключаемся к облаку
+            Drive drive = new Drive()
+            {
+                fileId = Properties.Settings.Default.gFileId,
+                folderId = Properties.Settings.Default.gFolderId
+            };
+
+            // Если файла в облаке есть, работаем с ним дальше
+            if (drive.FileExists())
+            {
+                // Пытаемся скачать файл
+                if (!drive.DownloadFile(cloudDataFilePath)) return false;
+
+                // Загружаем в класс
+                Links cloudLinks = new Links(cloudDataFilePath);
+                cloudLinks.Load();
+
+                // Теперь их надо сравнить..
+                // Для начала добавим новые записи..
+                foreach (Link cl in cloudLinks.LinkList)
+                {
+                    if (Program.Links.GetByAlias(cl.Alias)==null)
+                    {
+                        Program.Links.Add(cl);
+                    }
+                }
+
+                !!! надо подумать над удалением, наверно лучше не удалять 
+                // Удалим удаленные
+                foreach (Link ll in Program.Links.LinkList)
+                {
+                    if (cloudLinks.GetByAlias(ll.Alias) == null)
+                    {
+                        Program.Links.DeleteByAlias(ll.Alias);
+                    }
+                }
+
+
+
+            }
+
+            // Заливаем обновленный файл обратно
+            if (drive.UploadFile(DataFilePath))
+            {
+                Properties.Settings.Default.gFileId = drive.fileId;
+                Properties.Settings.Default.gFolderId = drive.folderId;
+                Properties.Settings.Default.Save();
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Поиск ссылки

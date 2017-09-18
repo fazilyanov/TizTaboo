@@ -82,7 +82,8 @@ namespace TizTaboo
                             Param = tbParam.Text,
                             Type = type,
                             Confirm = chkbConfirm.Checked,
-                            RunCount = (ulong)tbRunCount.Value
+                            RunCount = (ulong)tbRunCount.Value,
+                            LastEditDate = DateTime.Now
                         });
                     else
                     {
@@ -109,12 +110,11 @@ namespace TizTaboo
                     link.Type = type;
                     link.Confirm = chkbConfirm.Checked;
                     link.RunCount = (ulong)tbRunCount.Value;
+                    link.LastEditDate = DateTime.Now;
                     break;
             }
-
-            Program.Links.LastEditDateTime = DateTime.Now;
-            Program.Links.Save(Properties.Settings.Default.IsSync);
-            this.Close();
+            Program.Links.Save();
+            Close();
         }
     }
 }
