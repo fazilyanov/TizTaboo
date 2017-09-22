@@ -107,9 +107,10 @@ namespace TizTaboo
 
                 hotKeyManager.Register((Key)hotKey, (ModifierKeys)modKey);
             }
-            catch
+            catch (Exception ex)
             {
                 MessageBox.Show("Не удалось зарегистрировать глобальные горячие клавишы! Возможно, приложение уже запущено.", "Ошибка");
+                Log.Error(ex.Message);
                 Environment.Exit(-1);
             }
         }

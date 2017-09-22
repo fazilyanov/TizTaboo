@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace TizTaboo
@@ -170,8 +171,14 @@ namespace TizTaboo
             Drive drive = new Drive()
             {
                 fileId = Properties.Settings.Default.gFileId,
-                folderId = Properties.Settings.Default.gFolderId
             };
+
+            // Если запуск первый, или слетели настройки, нужно найти файлы в облаке
+            if (drive.fileId == "0")
+            {
+                drive.fileId = drive.Find("TizTabooDataFile");
+            }
+            
 
             // Если файла в облаке есть, работаем с ним дальше
             if (drive.FileExists())
@@ -183,35 +190,45 @@ namespace TizTaboo
                 Links cloudLinks = new Links(cloudDataFilePath);
                 cloudLinks.Load();
 
+                // Узнаем когда последний раз синхронизировались
+                DateTime lastSyncDate = Properties.Settings.Default.LastSyncDate;
+
                 // Теперь их надо сравнить..
-                // Для начала добавим новые записи..
+                // Для начала добавим новые записи и обновим измененные
                 foreach (Link cl in cloudLinks.LinkList)
                 {
-                    if (Program.Links.GetByAlias(cl.Alias)==null)
+                    // Если дата изменения облачной версии больше чем дата последней синхронизации
+                    if (cl.LastEditDate > lastSyncDate)
                     {
+                        // Если запись локальная есть - удаляем ее
+                        if (Program.Links.GetByAlias(cl.Alias) != null)
+                        {
+                            Program.Links.DeleteByAlias(cl.Alias);
+                        }
                         Program.Links.Add(cl);
                     }
                 }
 
-                !!! надо подумать над удалением, наверно лучше не удалять 
                 // Удалим удаленные
+                List<string> alias4del = new List<string>();
                 foreach (Link ll in Program.Links.LinkList)
                 {
-                    if (cloudLinks.GetByAlias(ll.Alias) == null)
+                    if (cloudLinks.GetByAlias(ll.Alias) == null && ll.LastEditDate < lastSyncDate)
                     {
-                        Program.Links.DeleteByAlias(ll.Alias);
+                        alias4del.Add(ll.Alias);
                     }
                 }
-
-
-
+                foreach (string  item in alias4del)
+                {
+                    Program.Links.DeleteByAlias(item);
+                }
             }
 
             // Заливаем обновленный файл обратно
             if (drive.UploadFile(DataFilePath))
             {
                 Properties.Settings.Default.gFileId = drive.fileId;
-                Properties.Settings.Default.gFolderId = drive.folderId;
+                Properties.Settings.Default.LastSyncDate = DateTime.Now;
                 Properties.Settings.Default.Save();
             }
 

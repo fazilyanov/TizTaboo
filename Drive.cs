@@ -15,7 +15,6 @@ namespace TizTaboo
     internal class Drive
     {
         public string fileId { get; set; } = "0";
-        public string folderId { get; set; } = "0";
 
         public DriveService Service { get; set; } = null;
 
@@ -53,6 +52,28 @@ namespace TizTaboo
             {
                 Log.Error("#201706021625: " + ex.Message);
             }
+        }
+
+        public string Find(string name)
+        {
+            string ret = "0";
+            string pageToken = null;
+            do
+            {
+                var request = Service.Files.List();
+                request.Q = $"name='{name}'";
+                request.Spaces = "drive";
+                request.Fields = "nextPageToken, files(id, name)";
+                request.PageToken = pageToken;
+                var result = request.Execute();
+                foreach (var file in result.Files)
+                {
+                    ret = file.Id;
+                    break;
+                }
+                pageToken = result.NextPageToken;
+            } while (pageToken != null);
+            return ret;
         }
 
         /// <summary>
@@ -131,19 +152,13 @@ namespace TizTaboo
             if (Service == null)
                 return false;
 
-            // Проверяем существует наша папка в облаке, если нет - создаем
-            if (!FileExists(folderId))
-            {
-                folderId = CreateFolder("TizTabooData");
-            }
-
             byte[] byteArray = File.ReadAllBytes(localFilePath);
             MemoryStream mStream = new MemoryStream(byteArray);
 
             // Файл для записи
             Google.Apis.Drive.v3.Data.File file = new Google.Apis.Drive.v3.Data.File()
             {
-                Name = Path.GetFileName(localFilePath),
+                Name = "TizTabooDataFile",
                 MimeType = "application/octet-stream",
                 Description = "Файл данных программы TizTaboo",
             };
@@ -151,7 +166,7 @@ namespace TizTaboo
             // Проверяем существует наш файл в облаке, если нет - создаем
             if (!FileExists())
             {
-                file.Parents = new List<string> { folderId };
+                file.Parents = new List<string> { CreateFolder("TizTabooData") };
                 FilesResource.CreateMediaUpload createRequest = Service.Files.Create(file, mStream, file.MimeType);
                 if (createRequest.Upload().Exception != null)
                 {
@@ -167,7 +182,7 @@ namespace TizTaboo
             // Если есть, обновляем
             else
             {
-                FilesResource.UpdateMediaUpload updateRequest = Service.Files.Update(file, Properties.Settings.Default.gFileId, mStream, file.MimeType);
+                FilesResource.UpdateMediaUpload updateRequest = Service.Files.Update(file, fileId, mStream, file.MimeType);
                 if (updateRequest.Upload().Exception != null)
                 {
                     Log.Error(updateRequest.Upload().Exception.Message);
